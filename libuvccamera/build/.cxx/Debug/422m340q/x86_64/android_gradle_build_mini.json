@@ -1,0 +1,169 @@
+{
+  "buildFiles": [
+    "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+    "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+      "NDK_PROJECT_PATH\u003dnull",
+      "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+      "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+      "APP_ABI\u003dx86_64",
+      "NDK_ALL_ABIS\u003dx86_64",
+      "NDK_DEBUG\u003d1",
+      "APP_PLATFORM\u003dandroid-19",
+      "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+      "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+    "NDK_PROJECT_PATH\u003dnull",
+    "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+    "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+    "APP_ABI\u003dx86_64",
+    "NDK_ALL_ABIS\u003dx86_64",
+    "NDK_DEBUG\u003d1",
+    "APP_PLATFORM\u003dandroid-19",
+    "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+    "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "uvc_static-debug-x86_64": {
+      "artifactName": "uvc_static",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libuvc_static.a"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libuvc_static.a",
+      "runtimeFiles": []
+    },
+    "usb1.0-debug-x86_64": {
+      "artifactName": "usb1.0",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libusb1.0.so"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libusb1.0.so",
+      "runtimeFiles": []
+    },
+    "jpeg-turbo212-debug-x86_64": {
+      "artifactName": "jpeg-turbo212",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libjpeg-turbo212.so"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libjpeg-turbo212.so",
+      "runtimeFiles": []
+    },
+    "UVCCamera-debug-x86_64": {
+      "artifactName": "UVCCamera",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libUVCCamera.so"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libUVCCamera.so",
+      "runtimeFiles": []
+    },
+    "jpeg-simd-debug-x86_64": {
+      "artifactName": "jpeg-simd",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libjpeg-simd.a"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libjpeg-simd.a",
+      "runtimeFiles": []
+    },
+    "jpeg-turbo212_static-debug-x86_64": {
+      "artifactName": "jpeg-turbo212_static",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libjpeg-turbo212_static.a"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libjpeg-turbo212_static.a",
+      "runtimeFiles": []
+    },
+    "uvc-debug-x86_64": {
+      "artifactName": "uvc",
+      "buildCommandComponents": [
+        "D:\\MYSDK\\ndk\\25.1.8937393\\ndk-build.cmd",
+        "NDK_PROJECT_PATH\u003dnull",
+        "APP_BUILD_SCRIPT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Android.mk",
+        "NDK_APPLICATION_MK\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\src\\main\\jni\\Application.mk",
+        "APP_ABI\u003dx86_64",
+        "NDK_ALL_ABIS\u003dx86_64",
+        "NDK_DEBUG\u003d1",
+        "APP_PLATFORM\u003dandroid-19",
+        "NDK_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj",
+        "NDK_LIBS_OUT\u003dD:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/lib",
+        "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q/obj/local/x86_64/libuvc.so"
+      ],
+      "abi": "x86_64",
+      "output": "D:\\ANDROIDWORK_SPACE\\AndroidStudioProjects\\libuvccamera\\build\\intermediates\\cxx\\Debug\\422m340q\\obj\\local\\x86_64\\libuvc.so",
+      "runtimeFiles": []
+    }
+  }
+}

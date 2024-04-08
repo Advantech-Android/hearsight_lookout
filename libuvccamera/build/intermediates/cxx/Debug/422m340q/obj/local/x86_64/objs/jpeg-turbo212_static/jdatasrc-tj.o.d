@@ -1,0 +1,17 @@
+D:\ANDROIDWORK_SPACE\AndroidStudioProjects\libuvccamera\build\intermediates\cxx\Debug\422m340q/obj/local/x86_64/objs/jpeg-turbo212_static/jdatasrc-tj.o: \
+  D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jdatasrc-tj.c \
+  D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jinclude.h \
+  D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/include/jconfig.h \
+  D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jpeglib.h \
+  D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jmorecfg.h \
+  D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jerror.h
+
+D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jinclude.h:
+
+D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/include/jconfig.h:
+
+D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jpeglib.h:
+
+D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jmorecfg.h:
+
+D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libjpeg-turbo/jerror.h:

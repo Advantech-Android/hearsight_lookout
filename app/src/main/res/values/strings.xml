@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name" translatable="false">ILook</string>
+    <string name="title_permissionfeature" translatable="false">PermissionFeature</string>
+
+<!--    Permission-->
+    <string name="permission_granted" translatable="false">Granted</string>
+    <string name="permission_denied" translatable="false">Denied</string>
+    <string name="permission_required" translatable="false">Permission Required</string>
+    <string name="dialog_permission_title" translatable="false">Permission required</string>
+    <string name="dialog_permission_default_message" translatable="false">Default message</string>
+    <string name="dialog_permission_button_positive" translatable="false">OK</string>
+</resources>

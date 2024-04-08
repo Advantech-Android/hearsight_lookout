@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "58676096337",
+    "firebase_url": "https://webrtc-android-3ca67-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "webrtc-android-3ca67",
+    "storage_bucket": "webrtc-android-3ca67.appspot.com"
+  },
+  "client": [
+   {
+      "client_info": {
+        "mobilesdk_app_id": "1:58676096337:android:b6f352e3af147f163df770",
+        "android_client_info": {
+          "package_name": "com.adv.ilook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZJ8D8ZnUYnSXE03DCAQE1ifcdYcpSLPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
