@@ -1,4 +1,0 @@
-make: Nothing to be done for 'UVCCamera'.
-make: Nothing to be done for 'jpeg-turbo212'.
-make: Nothing to be done for 'usb1.0'.
-make: Nothing to be done for 'uvc'.

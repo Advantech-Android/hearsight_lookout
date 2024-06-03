@@ -1,3 +1,0 @@
-D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libusb/android/jni/libusb.mk:66: Building to legacy library name libusb1.0, which differs from pkg-config.
-D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libusb/android/jni/libusb.mk:67: Use ndk-build USE_PC_NAME=1 to change the module name to the compatible usb-1.0.
-D:/ANDROIDWORK_SPACE/AndroidStudioProjects/libuvccamera/src/main/jni/libusb/android/jni/libusb.mk:68: USE_PC_NAME=1 may be the default in the future.

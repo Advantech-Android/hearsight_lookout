@@ -1,1 +1,0 @@
-D:/MYSDK/ndk/25.1.8937393/build/../build/core/add-application.mk:88: *** Android NDK: Aborting...    .  Stop.

@@ -10,4 +10,5 @@ interface NavigationHost {
   fun showNavigation(animate: Boolean)
   fun openTab(@IdRes navigationId: Int)
   fun openDiscoverTab()
+
 }

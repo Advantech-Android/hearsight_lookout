@@ -1,0 +1,524 @@
+{
+  "mqtt": {
+    "enable": true
+  },
+  "screens": {
+    "splash_screen": {
+      "current_screen": "splash_screen",
+      "next_screen": "splash_to_login_screen",
+      "select_screen": [],
+      "views": [
+        {
+          "view_type": "ImageView",
+          "enable": true
+        },
+        {
+          "view_type": "TextView",
+          "enable": true
+        }
+      ],
+      "previous_screen": "finish"
+    },
+    "select_screen_type": {
+      "current_screen": "select_screen_type",
+      "next_screen": "null",
+      "select_screen": [
+        {
+          "current_screen": "login_screen",
+          "next_screen": "info_screen",
+          "select_screen": [],
+          "previous_screen": "object_detection_to_home_screen"
+        },
+        {
+          "current_screen": "object_detection_screen",
+          "next_screen": "object_detection_to_output_screen",
+          "select_screen": [],
+          "previous_screen": "object_detection_to_home_screen"
+        }
+      ],
+      "views": {
+        "image_view": {
+          "icon": {
+            "url": "",
+            "color": "",
+            "width": 100,
+            "height": 100,
+            "enable": true
+          }
+        },
+        "text_view": {
+          "header": {
+            "text": "Select Mode",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "guide_mode_text": {
+            "text": "Guide",
+            "helper_text": "",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "vi_mode_text": {
+            "text": "Mobile Number",
+            "helper_text": "Enter without country code use digits only",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        },
+        "button_view": {
+          "guide_btn": {
+            "text": "Choose Guide",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "vi_btn": {
+            "text": "Choose VI",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        }
+      },
+      "previous_screen": "finish"
+    },
+    "login_screen": {
+      "current_screen": "login_screen",
+      "next_screen": "login_to_home_screen",
+      "properties": {
+        "color": {
+          "primary_color": "",
+          "secondary_color": "",
+          "enable": false
+        },
+        "image": {
+          "background_image": "",
+          "enable": false
+        }
+      },
+      "views": {
+        "image_view": {
+          "icon": {
+            "url": "",
+            "color": "",
+            "width": 100,
+            "height": 100,
+            "enable": true
+          }
+        },
+        "text_view": {
+          "header": {
+            "text": "Loginz",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "user_name": {
+            "text": "Enter your name",
+            "helper_text": "",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "mobile_number": {
+            "text": "Mobile Number",
+            "helper_text": "Enter without country code use digits only",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        },
+        "button_view": {
+          "login": {
+            "text": "Generate OTP",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        }
+      },
+      "select_screen": [
+        {
+          "current_screen": "login_screen",
+          "next_screen": "login_screen_to_home_screen",
+          "select_screen": [],
+          "previous_screen": "finish"
+        }
+      ],
+      "previous_screen": "finish"
+    },
+    "otp_screen": {
+      "current_screen": "otp_screen",
+      "next_screen": "otp_screen_to_home_screen",
+      "properties": {
+        "color": {
+          "primary_color": "",
+          "secondary_color": "",
+          "enable": false
+        },
+        "image": {
+          "background_image": "",
+          "enable": false
+        }
+      },
+      "views": {
+        "image_view": {
+          "icon": {
+            "url": "",
+            "color": "",
+            "width": 100,
+            "height": 100,
+            "enable": true
+          }
+        },
+        "text_view": {
+          "header": {
+            "text": "OtpScreen",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "otp_code": {
+            "text": "Enter otp",
+            "helper_text": "",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        },
+        "button_view": {
+          "generate_otp": {
+            "text": "Generate OTP",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "verify_otp": {
+            "text": "Verify OTP",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        }
+      },
+      "select_screen": [
+        {
+          "current_screen": "login_screen",
+          "next_screen": "login_screen_to_home_screen",
+          "select_screen": [],
+          "previous_screen": "finish"
+        }
+      ],
+      "previous_screen": "finish"
+    },
+    "device_control_screen": {
+      "current_screen": "device_control_screen",
+      "next_screen": "null",
+      "select_screen": [],
+      "previous_screen": "device_control_to_home_screen"
+    },
+    "object_detection_screen": {
+      "current_screen": "object_detection_screen",
+      "next_screen": "object_detection_to_output_screen",
+      "select_screen": [],
+      "previous_screen": "object_detection_to_home_screen"
+    },
+    "voice_translator_screen": {
+      "current_screen": "voice_translator_screen",
+      "next_screen": "voice_translator_to_output_screen",
+      "select_screen": [],
+      "previous_screen": "voice_translator_to_home_screen"
+    },
+    "text_to_speech_screen": {
+      "current_screen": "text_to_speech_screen",
+      "next_screen": "text_to_speech_to_output_screen",
+      "select_screen": [],
+      "previous_screen": "text_to_speech_to_home_screen"
+    },
+    "see_for_me_screen": {
+      "current_screen": "see_for_me_screen",
+      "next_screen": "see_for_me_screen_to_output_screen",
+      "select_screen": [],
+      "previous_screen": "see_for_me_to_home_screen"
+    },
+    "commodity_classification_screen": {
+      "current_screen": "commodity_classification_screen",
+      "next_screen": "commodity_classification_to_output_screen",
+      "select_screen": [],
+      "previous_screen": "commodity_classification_to_home_screen"
+    },
+    "output_screen": {
+      "current_screen": "output_screen",
+      "next_screen": "finish",
+      "select_screen": [],
+      "previous_screen": "output_screen_to_home_screen"
+    },
+    "home_screen": {
+      "current_screen": "home_screen",
+      "next_screen": "null",
+      "select_screen": [
+        {
+          "current_screen": "home_screen",
+          "next_screen": "home_screen_to_object_detection_screen",
+          "previous_screen": "finish"
+        },
+        {
+          "current_screen": "home_screen",
+          "next_screen": "home_screen_to_voice_translator_screen",
+          "previous_screen": "finish"
+        },
+        {
+          "current_screen": "home_screen",
+          "next_screen": "home_screen_to_text_to_speech_screen",
+          "previous_screen": "finish"
+        },
+        {
+          "current_screen": "home_screen",
+          "next_screen": "home_screen_to_see_for_me_screen",
+          "previous_screen": "finish"
+        },
+        {
+          "current_screen": "home_screen",
+          "next_screen": "home_screen_to_commodity_classification_screen",
+          "previous_screen": "finish"
+        },
+        {
+          "current_screen": "home_screen",
+          "next_screen": "home_screen_to_output_screen",
+          "previous_screen": "finish"
+        }
+      ],
+      "previous_screen": "finish"
+    },
+    "logout_screen": {
+      "current_screen": "logout_screen",
+      "next_screen": "logout_to_login_screen",
+      "select_screen": [],
+      "previous_screen": "logout_to_home_screen"
+    }
+  }
+}

@@ -1,2 +1,0 @@
-D:\ANDROIDWORK_SPACE\AndroidStudioProjects\libuvccamera\src\main\jni\Android.mk
-D:\ANDROIDWORK_SPACE\AndroidStudioProjects\libuvccamera\src\main\jni\Application.mk

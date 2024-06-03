@@ -2,6 +2,7 @@ package com.adv.ilook.model.util.permissions
 
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -12,7 +13,7 @@ import com.adv.ilook.R
 import java.lang.ref.WeakReference
 
 final class PermissionManager private constructor(private val fragment: WeakReference<Fragment>) {
-
+    private  val TAG = "xxxPermissionManager"
     private val requiredPermissions = mutableListOf<Permission>()
     private var rationale: String? = null
     private var callback: (Boolean) -> Unit = {}
@@ -20,6 +21,7 @@ final class PermissionManager private constructor(private val fragment: WeakRefe
 
     private val permissionCheck =
         fragment.get()?.registerForActivityResult(RequestMultiplePermissions()) { grantResults ->
+            Log.d(TAG, "null() called with: grantResults keys= ${grantResults.keys} values= ${grantResults.values}")
             sendResultAndCleanUp(grantResults)
         }
 
@@ -54,10 +56,20 @@ final class PermissionManager private constructor(private val fragment: WeakRefe
 
     private fun handlePermissionRequest() {
         fragment.get()?.let { fragment ->
+
             when {
-                areAllPermissionsGranted(fragment) -> sendPositiveResult()
-                shouldShowPermissionRationale(fragment) -> displayRationale(fragment)
-                else -> requestPermissions()
+                areAllPermissionsGranted(fragment) -> {
+                    Log.d(TAG, "handlePermissionRequest: sendPositiveResult()")
+                    sendPositiveResult()
+                }
+                shouldShowPermissionRationale(fragment) ->{
+                    Log.d(TAG, "handlePermissionRequest: displayRationale()")
+                    displayRationale(fragment)
+                }
+                else -> {
+                    Log.d(TAG, "handlePermissionRequest: requestPermissions()")
+                    requestPermissions()
+                }
             }
         }
     }
@@ -74,12 +86,20 @@ final class PermissionManager private constructor(private val fragment: WeakRefe
     }
 
     private fun sendPositiveResult() {
-        sendResultAndCleanUp(getPermissionList().associate { it to true } )
+        sendResultAndCleanUp(getPermissionList().associateWith {
+            Log.d(TAG, "sendPositiveResult: $it")
+            true
+        })
     }
 
     private fun sendResultAndCleanUp(grantResults: Map<String, Boolean>) {
-        callback(grantResults.all { it.value })
-        detailedCallback(grantResults.mapKeys { Permission.from(it.key) })
+        callback(grantResults.all {
+            Log.d(TAG, "sendResultAndCleanUp() called key=${it.key} value=${it.value}")
+            it.value
+        })
+        detailedCallback(
+            grantResults.mapKeys { Permission.from(it.key)
+            })
         cleanUp()
     }
 
@@ -98,10 +118,16 @@ final class PermissionManager private constructor(private val fragment: WeakRefe
         requiredPermissions.all { it.isGranted(fragment) }
 
     private fun shouldShowPermissionRationale(fragment: Fragment) =
-        requiredPermissions.any { it.requiresRationale(fragment) }
+        requiredPermissions.any {
+            it.requiresRationale(fragment)
+        }
+
 
     private fun getPermissionList() =
-        requiredPermissions.flatMap { it.permissions.toList() }.toTypedArray()
+        requiredPermissions.flatMap {
+            Log.d(TAG, "getPermissionList() called ${it.permissions}")
+            it.permissions.toList()
+        }.toTypedArray()
 
     private fun Permission.isGranted(fragment: Fragment) =
         permissions.all { hasPermission(fragment, it) }
