@@ -24,7 +24,7 @@
 24<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 25    package="com.serenegiant.uvccamera" >
 26
-27    <uses-sdk android:minSdkVersion="19" />
+27    <uses-sdk android:minSdkVersion="21" />
 28
 29    <uses-permission android:name="android.permission.CAMERA" />
 29-->D:\ANDROIDWORK_SPACE\ILook\libuvccamera\src\main\AndroidManifest.xml:28:5-65

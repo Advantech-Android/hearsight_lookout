@@ -6,6 +6,7 @@ plugins {
     id 'com.google.gms.google-services'
     // id 'com.google.devtools.ksp'
     id("com.google.firebase.crashlytics")
+    alias(libs.plugins.compose.compiler) //K2
 }
 
 android {
@@ -46,10 +47,17 @@ android {
         compose true
         buildConfig true
     }
-    composeOptions {
+  /*  composeOptions {
 // https://developer.android.com/jetpack/androidx/releases/compose-kotlin#groovy
         kotlinCompilerExtensionVersion '1.5.5'
-        kotlinCompilerVersion '1.9.20'
+       // kotlinCompilerVersion '1.9.20'
+        kotlinCompilerVersion '2.0.0'
+    }*/
+    composeCompiler {
+        enableStrongSkippingMode = true
+
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+       // stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
     }
     packaging {
         resources {

@@ -1,6 +1,6 @@
 package com.adv.ilook.model.db.remote.repository
 
-import Workflow
+import com.adv.ilook.model.data.workflow.Workflow
 import com.adv.ilook.model.db.local.source.CommonDataSource
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FirebaseClient
 import dagger.Provides

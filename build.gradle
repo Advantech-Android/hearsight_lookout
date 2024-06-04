@@ -7,12 +7,13 @@ alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
    // id 'com.google.devtools.ksp' version '1.8.10-1.0.9' apply false
     id("com.google.firebase.crashlytics") version "3.0.1" apply false
+   alias(libs.plugins.compose.compiler) apply false //K2
 }
 
 ext {
     versionCompiler = 31
     versionTarget = 27
-    versionMin = 19
+    versionMin = 21
 
     javaSourceCompatibility = JavaVersion.VERSION_1_8
     javaTargetCompatibility = JavaVersion.VERSION_1_8

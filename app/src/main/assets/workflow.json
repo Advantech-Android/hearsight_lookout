@@ -5,7 +5,7 @@
   "screens": {
     "splash_screen": {
       "current_screen": "splash_screen",
-      "next_screen": "splash_to_login_screen",
+      "next_screen": "splash_to_select_screen_type",
       "select_screen": [],
       "views": [
         {

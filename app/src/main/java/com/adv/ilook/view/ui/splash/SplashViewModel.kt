@@ -23,7 +23,8 @@ enum class TypeOfData {
 }
 
 @HiltViewModel
-class SplashViewModel @Inject constructor( private val networkHelper: NetworkHelper) : BaseViewModel(networkHelper) {
+class SplashViewModel @Inject constructor(
+    private val networkHelper: NetworkHelper) : BaseViewModel(networkHelper) {
     private val _nextScreenLiveData = MutableLiveData<Int>()
     var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
     override fun callOtherActivity(activity: Activity, msg: String) {

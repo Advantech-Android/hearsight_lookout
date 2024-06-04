@@ -1,7 +1,8 @@
 package com.adv.ilook.model.db.remote.repository
 
-import Workflow
 
+
+import com.adv.ilook.model.data.workflow.Workflow
 import retrofit2.Response
 
 

@@ -1,6 +1,6 @@
 package com.adv.ilook.view.base
 
-import Workflow
+
 import android.app.Activity
 import android.content.Context
 import android.util.Log

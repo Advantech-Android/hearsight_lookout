@@ -12,12 +12,14 @@ import com.adv.ilook.databinding.FragmentSelectScreenBinding
 import com.adv.ilook.databinding.FragmentSplashBinding
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.ui.splash.SplashViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
 private const val TAG = "SelectScreenFragment"
+@AndroidEntryPoint
 class SelectScreenFragment() :BaseFragment<FragmentSelectScreenBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSelectScreenBinding
         get() = FragmentSelectScreenBinding::inflate
@@ -29,9 +31,10 @@ class SelectScreenFragment() :BaseFragment<FragmentSelectScreenBinding>() {
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         _viewBinding = binding
-        lifecycleScope.launch(Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
+
     }
 
 }
