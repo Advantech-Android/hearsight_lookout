@@ -24,11 +24,18 @@ constructor(
     private val loginRepository: CommonRepository,
     private val networkHelper: NetworkHelper
 ): BaseViewModel(networkHelper) {
-    private val _nextScreenLiveData = MutableLiveData<Int>()
-    var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
+    private val _nextScreenLiveData_1 = MutableLiveData<Int>()
+    var nextScreenLiveData_1: LiveData<Int> = _nextScreenLiveData_1
+    private val _nextScreenLiveData_2 = MutableLiveData<Int>()
+    var nextScreenLiveData_2: LiveData<Int> = _nextScreenLiveData_2
+
+
+    private val _prevScreenLiveData = MutableLiveData<Int>()
+    var prevScreenLiveData: LiveData<Int> = _prevScreenLiveData
 
     private lateinit var selectScreenType: SelectScreenType
-    private var nextScreenId by Delegates.notNull<Int>()
+    private var nextScreenId_1 by Delegates.notNull<Int>()
+    private var nextScreenId_2 by Delegates.notNull<Int>()
     private var previousScreenId by Delegates.notNull<Int>()
     private val _tv_select_screen_header=MutableLiveData<String>()
     var tv_select_screen_header:LiveData<String> = _tv_select_screen_header
@@ -38,22 +45,21 @@ constructor(
         withContext(Dispatchers.IO) {
             getWorkflowFromJson {
                 selectScreenType=it.screens?.selectScreenType!!
-                nextScreenId = BasicFunction.getScreens()[selectScreenType!!.nextScreen] as Int
-                previousScreenId = BasicFunction.getScreens()[selectScreenType!!.previousScreen] as Int
-                when (nextScreenId) {
-                    is Int -> {
-                        _nextScreenLiveData.postValue(nextScreenId as Int)
-                        function(TypeOfData.INT)
-                    }
-                    else -> {
-                        function(TypeOfData.ANY)
-                    }
-                }
+                nextScreenId_1 = BasicFunction.getScreens()[getNextScreen(0)] as Int
+                nextScreenId_2 = BasicFunction.getScreens()[getNextScreen(1)] as Int
+                previousScreenId = BasicFunction.getScreens()[selectScreenType.previousScreen] as Int
+                _nextScreenLiveData_1.postValue(nextScreenId_1)
+                _nextScreenLiveData_2.postValue(nextScreenId_2)
+                _prevScreenLiveData.postValue(previousScreenId)
+
             }
             launch {
                 _tv_select_screen_header.postValue(selectScreenType.views?.textView?.header?.text!!)
-
             }
         }
     }
+
+    private fun getNextScreen(index:Int) =
+        if (selectScreenType.nextScreen == "null") selectScreenType.selectScreen?.get(index)?.nextScreen
+        else selectScreenType.nextScreen
 }

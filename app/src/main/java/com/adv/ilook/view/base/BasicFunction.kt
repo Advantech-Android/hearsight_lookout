@@ -67,8 +67,13 @@ class BasicFunction @Inject constructor(context: Context?) {
             //forward
             scr["splash_to_splash"] = R.id.action_splashFragment_self
             scr["splash_to_login_screen"] = R.id.action_splashFragment_to_loginFragment
-            scr["login_to_home_screen"] = R.id.action_splashFragment_to_loginFragment
             scr["splash_to_select_screen_type"] = R.id.action_splashFragment_to_selectScreenFragment
+
+            scr["login_to_login"] = R.id.action_loginFragment_self
+            scr["login_to_home_screen"] = R.id.action_splashFragment_to_loginFragment
+
+            scr["select_screen_type_to_select_screen_type"] = R.id.action_selectScreenFragment_self
+            scr["select_screen_type_to_instruction_screen"] = R.id.action_selectScreenFragment_to_instructionFragment
 
            //backward
             scr["null"] = 0

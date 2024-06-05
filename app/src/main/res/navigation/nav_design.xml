@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_loginFragment_to_mainActivity2"
             app:destination="@id/mainActivity2" />
+        <action
+            android:id="@+id/action_loginFragment_self"
+            app:destination="@id/loginFragment" />
     </fragment>
     <activity
         android:id="@+id/mainActivity2"
@@ -42,5 +45,23 @@
         <action
             android:id="@+id/action_selectScreenFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_selectScreenFragment_to_instructionFragment"
+            app:destination="@id/instructionFragment" />
+        <action
+            android:id="@+id/action_selectScreenFragment_self"
+            app:destination="@id/selectScreenFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/instructionFragment"
+        android:name="com.adv.ilook.view.ui.instruction.InstructionFragment"
+        android:label="fragment_instruction"
+        tools:layout="@layout/fragment_instruction" >
+        <action
+            android:id="@+id/action_instructionFragment_to_selectScreenFragment"
+            app:destination="@id/selectScreenFragment" />
+        <action
+            android:id="@+id/action_instructionFragment_self"
+            app:destination="@id/instructionFragment" />
     </fragment>
 </navigation>

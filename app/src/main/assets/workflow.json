@@ -24,16 +24,163 @@
       "next_screen": "null",
       "select_screen": [
         {
-          "current_screen": "login_screen",
-          "next_screen": "info_screen",
-          "select_screen": [],
-          "previous_screen": "object_detection_to_home_screen"
+          "current_screen": "select_screen_type",
+          "next_screen": "select_screen_type_to_instruction_screen",
+          "previous_screen": "finish"
         },
         {
-          "current_screen": "object_detection_screen",
-          "next_screen": "object_detection_to_output_screen",
-          "select_screen": [],
-          "previous_screen": "object_detection_to_home_screen"
+          "current_screen": "select_screen_type",
+          "next_screen": "select_screen_type_to_instruction_screen",
+          "previous_screen": "finish"
+        }
+      ],
+      "views": {
+        "image_view": {
+          "icon": {
+            "url": "",
+            "color": "",
+            "width": 100,
+            "height": 100,
+            "enable": true
+          }
+        },
+        "text_view": {
+          "header": {
+            "text": "Select Mode",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "guide_mode_text": {
+            "text": "Guide",
+            "helper_text": "",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "vi_mode_text": {
+            "text": "Mobile Number",
+            "helper_text": "Enter without country code use digits only",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        },
+        "button_view": {
+          "guide_btn": {
+            "text": "Choose Guide",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          },
+          "vi_btn": {
+            "text": "Choose VI",
+            "text_color": "",
+            "text_size": 15,
+            "enable": true,
+            "right_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": true
+            },
+            "left_icon": {
+              "url": "",
+              "color": "",
+              "width": 100,
+              "height": 100,
+              "enable": false
+            },
+            "validation": {
+              "enable": false
+            }
+          }
+        }
+      },
+      "previous_screen": "finish"
+    },
+    "instruction_screen": {
+      "current_screen": "instruction_screen",
+      "next_screen": "null",
+      "select_screen": [
+        {
+          "current_screen": "instruction_screen",
+          "next_screen": "instruction_screen_to_login_screen",
+          "previous_screen": "instruction_screen_to_select_screen_type"
+        },
+        {
+          "current_screen": "instruction_screen",
+          "next_screen": "instruction_screen_to_login_screen",
+          "previous_screen": "instruction_screen_to_select_screen_type"
         }
       ],
       "views": {
