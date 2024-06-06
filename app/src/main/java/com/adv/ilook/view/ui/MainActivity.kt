@@ -86,7 +86,8 @@ class MainActivity :
                         Log.d(TAG, "handleOnBackPressed: splash")
                     }
                     R.id.loginFragment -> {
-                        Log.d(TAG, "handleOnBackPressed: login")}
+                        Log.d(TAG, "handleOnBackPressed: login")
+                    }
                     else -> {}
                 }
             }

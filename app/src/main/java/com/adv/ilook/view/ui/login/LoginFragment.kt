@@ -19,6 +19,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.adv.ilook.R
@@ -36,6 +37,7 @@ import com.adv.ilook.view.ui.splash.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.properties.Delegates
 
 private const val TAG = "==>>LoginFragment"
 
@@ -46,18 +48,40 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     private var _viewBinding: FragmentLoginBinding? = null
     val viewModel by viewModels<LoginViewModel>()
     val shareViewModel by viewModels<BaseViewModel>()
+    override var nextScreenId_1 by Delegates.notNull<Int>()
+    override var nextScreenId_2 by Delegates.notNull<Int>()
+    override var previousScreenId by Delegates.notNull<Int>()
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLoginBinding
         get() = FragmentLoginBinding::inflate
 
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         _viewBinding = binding
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
-        uiSetUp()
+        uiReactiveAction()
         liveDataObserver()
 
+    }
+    // Create an OnBackPressedCallback to handle the back button event
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            isEnabled = true
+            findNavControl()?.run {
+                when (currentDestination?.id) {
+                    R.id.loginFragment -> {
+                        Toast.makeText(requireActivity(), "loginFragment", Toast.LENGTH_SHORT)
+                            .show()
+                        nav(previousScreenId)
+                    }else -> {
+                       requireActivity().finish()
+                    }
+
+                }
+            }
+        }
     }
 
     private fun liveDataObserver() {
@@ -121,7 +145,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     }
 
-    private fun uiSetUp() {
+    private fun uiReactiveAction() {
         binding.apply {
             usernameText.afterTextChanged {
                 viewModel.loginDataChange(

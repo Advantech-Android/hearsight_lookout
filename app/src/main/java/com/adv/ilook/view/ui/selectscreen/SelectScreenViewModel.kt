@@ -24,21 +24,20 @@ constructor(
     private val loginRepository: CommonRepository,
     private val networkHelper: NetworkHelper
 ): BaseViewModel(networkHelper) {
+    private lateinit var selectScreenType: SelectScreenType
+
     private val _nextScreenLiveData_1 = MutableLiveData<Int>()
     var nextScreenLiveData_1: LiveData<Int> = _nextScreenLiveData_1
     private val _nextScreenLiveData_2 = MutableLiveData<Int>()
     var nextScreenLiveData_2: LiveData<Int> = _nextScreenLiveData_2
 
-
     private val _prevScreenLiveData = MutableLiveData<Int>()
     var prevScreenLiveData: LiveData<Int> = _prevScreenLiveData
 
-    private lateinit var selectScreenType: SelectScreenType
     private var nextScreenId_1 by Delegates.notNull<Int>()
     private var nextScreenId_2 by Delegates.notNull<Int>()
     private var previousScreenId by Delegates.notNull<Int>()
-    private val _tv_select_screen_header=MutableLiveData<String>()
-    var tv_select_screen_header:LiveData<String> = _tv_select_screen_header
+
 
 
     override suspend fun init(function: (TypeOfData) -> Unit) {
@@ -55,6 +54,8 @@ constructor(
             }
             launch {
                 _tv_select_screen_header.postValue(selectScreenType.views?.textView?.header?.text!!)
+                _btn_guide_text.postValue(selectScreenType.views?.textView?.guideModeText?.text!!)
+                _btn_vi_text.postValue(selectScreenType.views?.textView?.viModeText?.text!!)
             }
         }
     }
@@ -62,4 +63,12 @@ constructor(
     private fun getNextScreen(index:Int) =
         if (selectScreenType.nextScreen == "null") selectScreenType.selectScreen?.get(index)?.nextScreen
         else selectScreenType.nextScreen
+
+    private val _tv_select_screen_header=MutableLiveData<String>()
+    var tv_select_screen_header:LiveData<String> = _tv_select_screen_header
+
+    private val _btn_guide_text=MutableLiveData<String>()
+    var btn_guide_text:LiveData<String> = _btn_guide_text
+    private val _btn_vi_text=MutableLiveData<String>()
+    var btn_vi_text:LiveData<String> = _btn_vi_text
 }

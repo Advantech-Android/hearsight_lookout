@@ -13,6 +13,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navOptions
@@ -44,16 +46,39 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
         get() = FragmentSplashBinding::inflate
     private var _viewBinding: FragmentSplashBinding? = null
     val viewModel by viewModels<SplashViewModel>()
-    private var nextScreenId by Delegates.notNull<Int>()
-    private var previousScreenId by Delegates.notNull<Int>()
+
     private val handler = Handler(Looper.getMainLooper())
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         _viewBinding = binding
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.init { }
         }
     }
+
+    // Create an OnBackPressedCallback to handle the back button event
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            isEnabled = true
+            findNavControl()?.run {
+                when (currentDestination?.id) {
+                    R.id.splashFragment -> {
+                        Toast.makeText(requireActivity(), "splash fragment", Toast.LENGTH_SHORT)
+                            .show()
+                        requireActivity().finish()
+                    }
+
+                    else -> {
+                        Toast.makeText(requireActivity(), "invalid", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+
+                }
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
@@ -77,6 +102,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
     val runnableInner = {
         nav(R.id.action_splashFragment_to_loginFragment)
     }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(TAG, "onAttach: ")
@@ -92,7 +118,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
         super.onDetach()
         Log.d(TAG, "onDetach: ")
     }
-
 
 
     override fun onDestroyView() {

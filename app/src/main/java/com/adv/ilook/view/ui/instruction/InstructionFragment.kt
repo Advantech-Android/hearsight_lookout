@@ -20,6 +20,9 @@ import kotlin.properties.Delegates
 private const val TAG = "InstructionFragment"
 @AndroidEntryPoint
 class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
+    override var nextScreenId_1 by Delegates.notNull<Int>()
+    override var nextScreenId_2 by Delegates.notNull<Int>()
+    override var previousScreenId by Delegates.notNull<Int>()
 
     companion object {
         fun newInstance() = InstructionFragment()
@@ -28,15 +31,14 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentInstructionBinding
         get() = FragmentInstructionBinding::inflate
     private var _viewBinding: FragmentInstructionBinding? = null
-    private var nextScreenId by Delegates.notNull<Int>()
-    private var previousScreenId by Delegates.notNull<Int>()
+
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         _viewBinding = binding
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }}
         viewModel.nextScreenLiveData.observe(this@InstructionFragment){
-            nextScreenId = it
+            nextScreenId_1 = it
         }
 
     }

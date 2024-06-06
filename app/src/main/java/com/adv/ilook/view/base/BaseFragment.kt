@@ -34,6 +34,7 @@ import com.adv.ilook.model.util.permissions.Permission
 import com.adv.ilook.model.util.permissions.PermissionManager
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.request.PermissionBuilder
+import kotlin.properties.Delegates
 
 private const val TAG = "==>>BaseFragment"
 
@@ -50,6 +51,9 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     abstract val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> VB
     lateinit var localeUpdatedContext: ContextWrapper
     lateinit var activityListener: PermissionListener
+    protected open var nextScreenId_1 by Delegates.notNull<Int>()
+    protected open var nextScreenId_2  by Delegates.notNull<Int>()
+    protected open var previousScreenId by Delegates.notNull<Int>()
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(TAG, "onAttach: ")
@@ -88,7 +92,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: >")
+        Log.d(TAG, "onResume: ")
     }
 
     fun createNavControl() {
@@ -97,11 +101,11 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
 
     fun nav(id: Int, bundle: Bundle = Bundle.EMPTY) {
         Log.d(TAG, "nav: $id")
-        findNavControl()?.navigate(id, bundle)
+        (requireActivity() as NavigationHost).findNavControl()?.navigate(id, bundle)
        // navController.navigate(id, bundle)
     }
 
-    private fun findNavControl() =
+    protected fun findNavControl() =
         (requireActivity() as NavigationHost).findNavControl()
 
     protected fun hideNavigation(animate: Boolean = true) =
@@ -198,6 +202,11 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
                     R.id.splashFragment -> {
                         Toast.makeText(requireActivity(), "splashFragment", Toast.LENGTH_SHORT)
                             .show()
+                    }
+                    R.id.selectScreenFragment ->{
+                        Toast.makeText(requireActivity(), "selectScreenFragment", Toast.LENGTH_SHORT)
+                            .show()
+                        nav(R.id.selectScreenFragment)
                     }
 
                     R.id.loginFragment -> {

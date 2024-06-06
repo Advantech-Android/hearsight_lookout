@@ -7,6 +7,7 @@
     tools:context=".view.base.BaseActivity">
 
     <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/header_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Select your login mode"
@@ -18,10 +19,12 @@
         app:layout_constraintVertical_bias="0.150" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/guide_mode"
+        android:id="@+id/txt_guide_mode"
         android:layout_width="150dp"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
         android:text="Guide"
+        android:textSize="13dp"
+        android:gravity="center"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,13 +32,13 @@
         app:layout_constraintVertical_bias="0.85" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/help_seeker_mode"
+        android:id="@+id/txt_visually_impaired_mode"
         android:layout_width="150dp"
-        android:layout_height="48dp"
+        android:layout_height="56dp"
         android:layout_marginEnd="16dp"
-
-
-        android:text="Help Seeker "
+        android:text="Visually Impaired"
+        android:textSize="13dp"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
