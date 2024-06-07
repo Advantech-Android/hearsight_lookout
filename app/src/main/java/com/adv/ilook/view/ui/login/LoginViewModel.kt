@@ -29,21 +29,20 @@ class LoginViewModel @Inject constructor(
     private val loginRepository: CommonRepository,
     private val networkHelper: NetworkHelper
 ) : BaseViewModel(networkHelper) {
+  // private lateinit var loginScreen: LoginScreen
+    private var loginScreen by Delegates.notNull<LoginScreen>()
+    private val _nextScreenLiveData = MutableLiveData<Int>()
+    var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
+    private val _prevScreenLiveData = MutableLiveData<Int>()
+    var prevScreenLiveData: LiveData<Int> = _prevScreenLiveData
+
     override suspend fun init(function: (TypeOfData) -> Unit) {
         withContext(Dispatchers.IO) {
             getWorkflowFromJson {
                 loginScreen = it.screens?.loginScreen!!
-                nextScreenId = BasicFunction.getScreens()[loginScreen.nextScreen] as Int
-                previousScreenId = BasicFunction.getScreens()[loginScreen.previousScreen] as Int
-                when (nextScreenId) {
-                    is Int -> {
-                        _nextScreenLiveData.postValue(nextScreenId as Int)
-                        function(TypeOfData.INT)
-                    }
-                    else -> {
-                        function(TypeOfData.ANY)
-                    }
-                }
+                _nextScreenLiveData.postValue(BasicFunction.getScreens()[loginScreen.nextScreen] as Int)
+                _prevScreenLiveData.postValue( BasicFunction.getScreens()[loginScreen.previousScreen] as Int)
+                function(TypeOfData.INT)
             }
             launch {
                 _tv_login_header.postValue(loginScreen.views?.textView?.header?.text!!)
@@ -111,12 +110,8 @@ class LoginViewModel @Inject constructor(
     private val _loginResult = MutableLiveData<Resource<Any>>()
     val loginResult: LiveData<Resource<Any>> = _loginResult
 
-    private var nextScreenId by Delegates.notNull<Int>()
-    private var previousScreenId by Delegates.notNull<Int>()
-    private lateinit var loginScreen: LoginScreen
     val username = MutableLiveData<String>()
-    private val _nextScreenLiveData = MutableLiveData<Int>()
-    var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
+
 
     private val _tv_login_header = MutableLiveData<String>()
     var tv_login_header: LiveData<String> = _tv_login_header

@@ -24,7 +24,8 @@ constructor(
     private val loginRepository: CommonRepository,
     private val networkHelper: NetworkHelper
 ): BaseViewModel(networkHelper) {
-    private lateinit var selectScreenType: SelectScreenType
+    //private lateinit var selectScreenType: SelectScreenType
+    private var selectScreenType by Delegates.notNull<SelectScreenType>()
 
     private val _nextScreenLiveData_1 = MutableLiveData<Int>()
     var nextScreenLiveData_1: LiveData<Int> = _nextScreenLiveData_1
@@ -54,8 +55,8 @@ constructor(
             }
             launch {
                 _tv_select_screen_header.postValue(selectScreenType.views?.textView?.header?.text!!)
-                _btn_guide_text.postValue(selectScreenType.views?.textView?.guideModeText?.text!!)
-                _btn_vi_text.postValue(selectScreenType.views?.textView?.viModeText?.text!!)
+                _btn_guide_text.postValue(selectScreenType.views?.buttonView?.guideBtn?.text!!)
+                _btn_vi_text.postValue(selectScreenType.views?.buttonView?.viBtn?.text!!)
             }
         }
     }

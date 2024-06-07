@@ -13,9 +13,28 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="266" />
-                            <option name="y" value="-183" />
+                            <option name="x" value="383" />
+                            <option name="y" value="-175" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_instructionFragment_self">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_instructionFragment_to_loginFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_instructionFragment_to_selectScreenFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -31,6 +50,11 @@
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_loginFragment_self">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_loginFragment_to_mainActivity2">
                               <value>
                                 <LayoutPositions />
@@ -51,7 +75,7 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="274" />
+                            <option name="x" value="378" />
                             <option name="y" value="212" />
                           </Point>
                         </option>
@@ -69,6 +93,11 @@
                         </option>
                         <option name="myPositions">
                           <map>
+                            <entry key="action_selectScreenFragment_self">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_selectScreenFragment_to_instructionFragment">
                               <value>
                                 <LayoutPositions />
