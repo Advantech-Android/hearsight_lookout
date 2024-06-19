@@ -11,8 +11,8 @@
         android:id="@+id/img_back_arrow"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:translationZ="90dp"
         android:src="@drawable/baseline_arrow_back_24"
+        android:translationZ="90dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,10 +22,10 @@
         android:id="@+id/header_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:elevation="8dp"
         android:lineSpacingExtra="50dp"
         android:text="Privacy Policy and Terms of Use"
         android:translationZ="90dp"
-        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,20 +39,35 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
 
-        app:layout_constraintBottom_toTopOf="@+id/img_forward_arrow"
+        app:layout_constraintBottom_toTopOf="@+id/agree_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_back_arrow"
         tools:ignore="MissingConstraints" />
 
-    <!-- ImageView for forward arrow -->
-    <ImageView
-        android:id="@+id/img_forward_arrow"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:translationZ="90dp"
-        android:src="@drawable/baseline_arrow_forward_24"
+    <Button
+        android:id="@+id/agree_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Agree"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
+    <Button
+        android:id="@+id/disagree_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Disagree"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
