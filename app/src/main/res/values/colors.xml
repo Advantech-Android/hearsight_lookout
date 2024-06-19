@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<!--    hearsight app-->
+    <color name="hs_gray">#929497</color>
+    <color name="hs_gray_E6E6E6">#E6E6E6</color>
+    <color name="hs_gray_808080">#808080</color>
     <color name="black">#FF000000</color>
+    <color name="hs_black">#323031</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#8BC53F</color>
     <color name="colorAccent">#FF000000</color>
+<!--    common color-->
+
+
     <color name="md_theme_primary">#ACE85E</color>
     <color name="md_theme_onPrimary">#1F3700</color>
     <color name="md_theme_primaryContainer">#84BD38</color>

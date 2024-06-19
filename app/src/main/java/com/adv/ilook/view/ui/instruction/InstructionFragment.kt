@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import com.adv.ilook.R
@@ -31,6 +33,31 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
     override var nextScreenId_2 by Delegates.notNull<Int>()
     override var previousScreenId by Delegates.notNull<Int>()
 
+    // Create an OnBackPressedCallback to handle the back button event
+    private val onBackPress = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            isEnabled = true
+            findNavControl()?.run {
+                when (currentDestination?.id) {
+                    R.id.instructionFragment -> {
+                        Toast.makeText(
+                            requireActivity(),
+                            "instruction fragment",
+                            Toast.LENGTH_SHORT
+                        )
+                            .show()
+                        nav(previousScreenId)
+                    }
+
+                    else -> {
+                        requireActivity().finish()
+                    }
+
+                }
+            }
+        }
+    }
+
     companion object {
         fun newInstance() = InstructionFragment()
     }
@@ -43,6 +70,7 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         viewBinding = binding
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPress)
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
@@ -54,6 +82,7 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
         }
 
         liveDataObserver()
+
     }
 
     fun liveDataObserver() {
@@ -71,7 +100,18 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
                 }
             }
 
-
+            viewModel.btn_agree_text.observe(this@InstructionFragment) { text ->
+                agreeButton.text = text
+            }
+            viewModel.btn_disagree_text.observe(this@InstructionFragment) { text ->
+                disagreeButton.text = text
+            }
+            viewModel.btn_agree_enable.observe(this@InstructionFragment) { enable ->
+                agreeButton.isEnabled = enable
+            }
+            viewModel.btn_disagree_enable.observe(this@InstructionFragment) { enable ->
+                disagreeButton.isEnabled = enable
+            }
         }
     }
 
@@ -94,5 +134,13 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
 
     private fun uiReactiveAction() {
         Log.d(TAG, "uiReactiveAction: ")
+        viewBinding?.apply {
+            agreeButton.setOnClickListener {
+                nav(nextScreenId_1)
+            }
+            disagreeButton.setOnClickListener {
+                nav(previousScreenId)
+            }
+        }
     }
 }

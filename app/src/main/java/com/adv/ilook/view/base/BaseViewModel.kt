@@ -27,6 +27,8 @@ private const val TAG = "BaseViewModel"
 
 @HiltViewModel
 open class BaseViewModel @Inject constructor(private val networkHelper: NetworkHelper) : ViewModel() {
+    val _speechCompletedLiveData= MutableLiveData<String>()
+    var speechCompletedLiveData: LiveData<String> = _speechCompletedLiveData
     val actionLiveData = MutableLiveData<String>()
     @Inject
     lateinit var basicFunction: BasicFunction

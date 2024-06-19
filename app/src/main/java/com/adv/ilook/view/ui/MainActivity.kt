@@ -1,6 +1,7 @@
 package com.adv.ilook.view.ui
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -88,7 +89,9 @@ class MainActivity :
                     R.id.loginFragment -> {
                         Log.d(TAG, "handleOnBackPressed: login")
                     }
-                    else -> {}
+                    else -> {
+
+                    }
                 }
             }
         }

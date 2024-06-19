@@ -320,7 +320,7 @@
         },
         "text_view": {
           "header": {
-            "text": "Loginz",
+            "text": "Login",
             "text_color": "",
             "text_size": 15,
             "enable": true,
@@ -425,7 +425,7 @@
           "previous_screen": "finish"
         }
       ],
-      "previous_screen": "finish"
+      "previous_screen": "login_screen_to_instruction_screen"
     },
     "otp_screen": {
       "current_screen": "otp_screen",
@@ -453,8 +453,10 @@
         },
         "text_view": {
           "header": {
-            "text": "OtpScreen",
+            "text": "Enter OTP",
+            "helper_text": "Enter the 6-digit code from the SMS \n sent to +91 00000 00000",
             "text_color": "",
+            "helper_text_color": "",
             "text_size": 15,
             "enable": true,
             "right_icon": {
@@ -479,6 +481,7 @@
             "text": "Enter otp",
             "helper_text": "",
             "text_color": "",
+            "helper_text_color": "",
             "text_size": 15,
             "enable": true,
             "right_icon": {

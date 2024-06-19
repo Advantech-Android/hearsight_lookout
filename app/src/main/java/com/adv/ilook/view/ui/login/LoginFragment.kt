@@ -57,7 +57,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         _viewBinding = binding
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPress)
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
@@ -66,7 +66,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     }
     // Create an OnBackPressedCallback to handle the back button event
-    private val callback = object : OnBackPressedCallback(true) {
+    private val   onBackPress = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             isEnabled = true
             findNavControl()?.run {
@@ -97,7 +97,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         is UiStatus.OtpFormState -> {}
                         is UiStatus.LoginFormState -> {
                             // disable login button unless both username / password is valid
-                            loginButton.isEnabled = loginState.isDataValid
+                            generateOtpButton.isEnabled = loginState.isDataValid
                             if (loginState.usernameError != null) {
                                 usernameText.error = getString(loginState.usernameError)
                             }
@@ -139,7 +139,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 binding.phoneTILayout.hint = it
             }
             viewModel.bt_login_text.observe(viewLifecycleOwner) {
-                binding.loginButton.text = it
+                binding.generateOtpButton.text = it
+            }
+            viewModel.prevScreenLiveData.observe(viewLifecycleOwner) {
+                previousScreenId = it
             }
         }
 
@@ -175,7 +178,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 }
             }
 
-            loginButton.setOnClickListener {
+            generateOtpButton.setOnClickListener {
                 activityListener.onRequestPermissionListener(
                     binding,
                     arrayListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA)

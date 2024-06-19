@@ -59,6 +59,8 @@ constructor(
                 _html_terms_of_use_enable.postValue(instructionScreen.views?.textView?.termsOfUseText?.enable!!)
                 _btn_agree_text.postValue(instructionScreen.views?.buttonView?.agreeBtn?.text!!)
                 _btn_disagree_text.postValue(instructionScreen.views?.buttonView?.disagreeBtn?.text!!)
+                _btn_agree_enable.postValue(instructionScreen.views?.buttonView?.agreeBtn?.enable!!)
+                _btn_disagree_enable.postValue(instructionScreen.views?.buttonView?.disagreeBtn?.enable!!)
             }
         }
     }
@@ -73,6 +75,11 @@ constructor(
     var btn_agree_text: LiveData<String> = _btn_agree_text
     private val _btn_disagree_text = MutableLiveData<String>()
     var btn_disagree_text: LiveData<String> = _btn_disagree_text
+
+    private val _btn_disagree_enable = MutableLiveData<Boolean>()
+    var btn_disagree_enable: LiveData<Boolean> = _btn_disagree_enable
+    private val _btn_agree_enable = MutableLiveData<Boolean>()
+    var btn_agree_enable: LiveData<Boolean> = _btn_agree_enable
 
 }
 

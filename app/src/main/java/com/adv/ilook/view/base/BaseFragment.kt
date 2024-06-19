@@ -7,6 +7,7 @@ import android.content.ContextWrapper
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -34,14 +35,22 @@ import com.adv.ilook.model.util.permissions.Permission
 import com.adv.ilook.model.util.permissions.PermissionManager
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.request.PermissionBuilder
+import java.util.Locale
 import kotlin.properties.Delegates
+
 
 private const val TAG = "==>>BaseFragment"
 
-abstract class BaseFragment<VB : ViewBinding> : Fragment() {
+abstract class BaseFragment<VB : ViewBinding> : Fragment(), TextToSpeech.OnInitListener {
+
+
+    private var locale: Int = 0
+    private lateinit var localeSpeech: Locale
+    private lateinit var tts: TextToSpeech
+
     @Suppress("UNCHECKED_CAST")
     protected val binding: VB
-        get() = _binding as VB
+        get():VB = _binding as VB
     private var _binding: ViewBinding? = null
     lateinit var observer: BaseLifecycleObserver
     val sharedModel: BaseViewModel by activityViewModels()
@@ -52,20 +61,22 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     lateinit var localeUpdatedContext: ContextWrapper
     lateinit var activityListener: PermissionListener
     protected open var nextScreenId_1 by Delegates.notNull<Int>()
-    protected open var nextScreenId_2  by Delegates.notNull<Int>()
+    protected open var nextScreenId_2 by Delegates.notNull<Int>()
     protected open var previousScreenId by Delegates.notNull<Int>()
+    abstract fun setup(savedInstanceState: Bundle?)
     override fun onAttach(context: Context) {
         super.onAttach(context)
         Log.d(TAG, "onAttach: ")
         activityListener = context as PermissionListener
     }
 
-    abstract fun setup(savedInstanceState: Bundle?)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
         observer = BaseLifecycleObserver()
         lifecycle.addObserver(observer)
+        tts = TextToSpeech(context, this)
     }
 
 
@@ -77,9 +88,6 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
         Log.d(TAG, "onCreateView: ")
         createNavControl()
         _binding = bindingInflater.invoke(inflater, container, false)
-        Log.d(TAG, "onCreateView: FragmentBinding = ${_binding}")
-
-
         return requireNotNull(_binding).root
     }
 
@@ -87,7 +95,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Log.d(TAG, "onViewCreated: ")
         setup(savedInstanceState)
-       requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        // requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
     override fun onResume() {
@@ -102,7 +110,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
     fun nav(id: Int, bundle: Bundle = Bundle.EMPTY) {
         Log.d(TAG, "nav: $id")
         (requireActivity() as NavigationHost).findNavControl()?.navigate(id, bundle)
-       // navController.navigate(id, bundle)
+        // navController.navigate(id, bundle)
     }
 
     protected fun findNavControl() =
@@ -198,25 +206,57 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment() {
         override fun handleOnBackPressed() {
             isEnabled = true
             findNavControl()?.run {
-                when (currentDestination?.id) {
-                    R.id.splashFragment -> {
-                        Toast.makeText(requireActivity(), "splashFragment", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    R.id.selectScreenFragment ->{
-                        Toast.makeText(requireActivity(), "selectScreenFragment", Toast.LENGTH_SHORT)
-                            .show()
-                        nav(R.id.selectScreenFragment)
-                    }
 
-                    R.id.loginFragment -> {
-                        Toast.makeText(requireActivity(), "loginFragment", Toast.LENGTH_SHORT)
-                            .show()
-                        nav(R.id.action_loginFragment_to_splashFragment)
-                    }
-
-                }
             }
+        }
+    }
+
+    /**speech from text content*/
+
+    fun sendTextForSpeech(
+        text: String,
+        volume: Float = 0.9f,
+        pan: Float = 0.0f,
+        stream: Float = 1.0f,
+        pitch: Float = 1.0f,
+        rate: Float = 1.1f,
+        language: String = "en",
+        country: String = "US"
+    ) {
+        localeSpeech = Locale(language, country)
+        locale = if (tts.isLanguageAvailable(localeSpeech) >= TextToSpeech.LANG_AVAILABLE) {
+            tts.setLanguage(localeSpeech)
+        }else{
+            tts.setLanguage(Locale.US)
+        }
+
+        val params = Bundle().apply {
+            putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume) // Set volume (0.0 to 1.0)
+            putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan) // Set pan (-1.0 to 1.0)
+            putFloat(TextToSpeech.Engine.KEY_PARAM_STREAM, stream)
+        }
+        tts.setPitch(pitch) // Set pitch (default is 1.0)
+        tts.setSpeechRate(rate) // Set speech rate (default is 1.0)
+        tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "")
+
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            if (locale == TextToSpeech.LANG_MISSING_DATA || locale == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e(TAG, "The Language not supported!")
+                _sharedModel._speechCompletedLiveData.value = "failed"
+            } else {
+                _sharedModel._speechCompletedLiveData.value = "completed"
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::tts.isInitialized) {
+            tts.stop()
+            tts.shutdown()
         }
     }
 }

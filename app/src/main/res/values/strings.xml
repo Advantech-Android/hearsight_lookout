@@ -28,5 +28,6 @@
     <string name="enter_your_name">"     Enter your name"</string>
     <string name="title_activity_login1">Login1Activity</string>
     <string name="network_error">Internet required</string>
+    <string name="login_now">Login Now</string>
 
 </resources>
