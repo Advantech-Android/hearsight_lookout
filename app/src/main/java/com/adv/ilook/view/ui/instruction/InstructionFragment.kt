@@ -19,9 +19,12 @@ import com.adv.ilook.databinding.FragmentSelectScreenBinding
 import com.adv.ilook.view.base.BaseFragment
 
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newCoroutineContext
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 import kotlin.properties.Delegates
 
@@ -132,14 +135,39 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
         uiReactiveAction()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun uiReactiveAction() {
         Log.d(TAG, "uiReactiveAction: ")
         viewBinding?.apply {
             agreeButton.setOnClickListener {
-                nav(nextScreenId_1)
+                val time=System.currentTimeMillis()
+                Log.d(TAG, "uiReactiveAction: ${time}")
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        sendTextForSpeech(agreeButton.text.toString())
+                    }
+
+                    // After sendTextForSpeech completes, switch back to the main thread for navigation
+                    requireActivity().runOnUiThread {
+                        nav(nextScreenId_1)
+                    }
+                Log.d(TAG, "uiReactiveAction: ${System.currentTimeMillis()-time}")
             }
+                }
             disagreeButton.setOnClickListener {
-                nav(previousScreenId)
+                val time=System.currentTimeMillis()
+                Log.d(TAG, "uiReactiveAction:disagree ${time}")
+                lifecycleScope.launch(Dispatchers.Main) {
+                    withContext(Dispatchers.IO) {
+                        sendTextForSpeech(disagreeButton.text.toString())
+                    }
+                    requireActivity().runOnUiThread {
+                        nav(previousScreenId)
+                    }
+
+                    Log.d(TAG, "uiReactiveAction:disagree ${System.currentTimeMillis()-time}")
+               }
+
             }
         }
     }

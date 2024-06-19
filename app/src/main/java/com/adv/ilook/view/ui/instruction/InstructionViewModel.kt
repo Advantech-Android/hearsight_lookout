@@ -65,6 +65,10 @@ constructor(
         }
     }
 
+    fun buttonSound(){
+
+    }
+
     private val _tv_select_screen_header = MutableLiveData<String>()
     var tv_select_screen_header: LiveData<String> = _tv_select_screen_header
     private val _html_terms_of_use = MutableLiveData<String>()

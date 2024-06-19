@@ -44,8 +44,7 @@ private const val TAG = "==>>BaseFragment"
 abstract class BaseFragment<VB : ViewBinding> : Fragment(), TextToSpeech.OnInitListener {
 
 
-    private var locale: Int = 0
-    private lateinit var localeSpeech: Locale
+
     private lateinit var tts: TextToSpeech
 
     @Suppress("UNCHECKED_CAST")
@@ -223,40 +222,16 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), TextToSpeech.OnInitL
         language: String = "en",
         country: String = "US"
     ) {
-        localeSpeech = Locale(language, country)
-        locale = if (tts.isLanguageAvailable(localeSpeech) >= TextToSpeech.LANG_AVAILABLE) {
-            tts.setLanguage(localeSpeech)
-        }else{
-            tts.setLanguage(Locale.US)
-        }
-
-        val params = Bundle().apply {
-            putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume) // Set volume (0.0 to 1.0)
-            putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan) // Set pan (-1.0 to 1.0)
-            putFloat(TextToSpeech.Engine.KEY_PARAM_STREAM, stream)
-        }
-        tts.setPitch(pitch) // Set pitch (default is 1.0)
-        tts.setSpeechRate(rate) // Set speech rate (default is 1.0)
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "")
-
-    }
+        sharedModel.sendTextForSpeech(tts, text, volume, pan, stream, pitch, rate, language, country)
+     }
 
     override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
-            if (locale == TextToSpeech.LANG_MISSING_DATA || locale == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e(TAG, "The Language not supported!")
-                _sharedModel._speechCompletedLiveData.value = "failed"
-            } else {
-                _sharedModel._speechCompletedLiveData.value = "completed"
-            }
-        }
+      sharedModel.onInitSpeech(status)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::tts.isInitialized) {
-            tts.stop()
-            tts.shutdown()
-        }
+      if (::tts.isInitialized)
+          sharedModel.onDestroySpeech(tts)
     }
 }
