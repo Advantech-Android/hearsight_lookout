@@ -157,7 +157,7 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
             disagreeButton.setOnClickListener {
                 val time=System.currentTimeMillis()
                 Log.d(TAG, "uiReactiveAction:disagree ${time}")
-                lifecycleScope.launch(Dispatchers.Main) {
+                lifecycleScope.launch() {
                     withContext(Dispatchers.IO) {
                         sendTextForSpeech(disagreeButton.text.toString())
                     }
