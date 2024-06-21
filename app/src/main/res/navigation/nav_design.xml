@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_loginFragment_to_instructionFragment"
             app:destination="@id/instructionFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_otpFragment"
+            app:destination="@id/otpFragment" />
     </fragment>
     <activity
         android:id="@+id/mainActivity2"
@@ -72,6 +75,9 @@
         <action
             android:id="@+id/action_instructionFragment_to_otpFragment"
             app:destination="@id/otpFragment" />
+        <action
+            android:id="@+id/action_instructionFragment_to_loginFragment2"
+            app:destination="@id/loginFragment" />
     </fragment>
     <fragment
         android:id="@+id/otpFragment"

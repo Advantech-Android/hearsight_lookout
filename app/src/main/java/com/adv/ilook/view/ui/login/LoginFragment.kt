@@ -21,6 +21,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.adv.ilook.R
 import com.adv.ilook.databinding.FragmentLoginBinding
@@ -34,9 +35,11 @@ import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.ui.MainActivity2
 
 import com.adv.ilook.view.ui.splash.SplashViewModel
+import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 private const val TAG = "==>>LoginFragment"
@@ -61,12 +64,18 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
-        uiReactiveAction()
-        liveDataObserver()
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { uiReactiveAction() }
+       // viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { liveDataObserver() }
+        viewLifecycleOwnerLiveData.observe(this) { lifecycleOwner ->
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                liveDataObserver(lifecycleOwner)
+            }
+        }
 
     }
+
     // Create an OnBackPressedCallback to handle the back button event
-    private val   onBackPress = object : OnBackPressedCallback(true) {
+    private val onBackPress = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             isEnabled = true
             findNavControl()?.run {
@@ -75,8 +84,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         Toast.makeText(requireActivity(), "loginFragment", Toast.LENGTH_SHORT)
                             .show()
                         nav(previousScreenId)
-                    }else -> {
-                       requireActivity().finish()
+                    }
+
+                    else -> {
+                        requireActivity().finish()
                     }
 
                 }
@@ -84,15 +95,19 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
     }
 
-    private fun liveDataObserver() {
+    private fun liveDataObserver(lifecycleOwner: LifecycleOwner) {
         binding.apply {
-            viewModel.loginFormState.observe(viewLifecycleOwner,
+
+            viewModel.loginFormState.observe(lifecycleOwner,
                 Observer { loginFormState ->
                     val loginState: UiStatus = loginFormState ?: return@Observer
                     when (loginState) {
                         is UiStatus.Idle -> {}
                         is UiStatus.Loading -> {}
-                        is UiStatus.Success -> {}
+                        is UiStatus.Success -> {
+                            Log.d(TAG, "liveDataObserver: ------")
+                        }
+
                         is UiStatus.Error -> {}
                         is UiStatus.OtpFormState -> {}
                         is UiStatus.LoginFormState -> {
@@ -110,39 +125,63 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     }
                 })
 
-            viewModel.loginResult.observe(viewLifecycleOwner,
-                Observer { it ->
-                    val loginResult = it ?: return@Observer
-                    when (it.status) {
-                        Status.LOADING -> {
-                            if (it.data == false) loadingGif.visibility =
-                                View.GONE else loadingGif.visibility = View.VISIBLE
+            viewModel.loginResult.observe(
+                lifecycleOwner
+            ) { it ->
+
+                val loginResult = it ?: return@observe
+                Log.d(TAG, "liveDataObserver: $loginResult")
+                when (loginResult.status) {
+                    Status.LOADING -> {
+
+                        if (loginResult.data == false) {
+                            loadingImage.visibility = View.GONE
+                            innerContainer.alpha = 1f
+                            innerContainer.isEnabled = true
+
+                        } else {
+                            innerContainer.alpha = 0.5f
+                            innerContainer.isEnabled = false
+                            loadingImage.visibility = View.VISIBLE
+                            Glide.with(requireActivity()).load(R.drawable.loading)
+                                .into(loadingImage)
                         }
 
-                        Status.ERROR -> {
-                            showLoginFailed(loginResult.message as Int)
-                        }
 
-                        Status.SUCCESS -> {
-                            updateUiWithUser(loginResult.data as String)
-                        }
                     }
 
-                })
-            viewModel.tv_login_header.observe(viewLifecycleOwner) {
+                    Status.ERROR -> {
+
+                        showLoginFailed(loginResult.message as Int)
+
+                    }
+
+                    Status.SUCCESS -> {
+                        nav(nextScreenId_1)
+                        updateUiWithUser(loginResult.data as String)
+                    }
+                }
+
+
+            }
+            viewModel.tv_login_header.observe(lifecycleOwner) {
                 binding.loginText.text = it
             }
-            viewModel.tv_username.observe(viewLifecycleOwner) {
+            viewModel.tv_username.observe(lifecycleOwner) {
                 binding.usernameTILayout.hint = it
             }
-            viewModel.tv_phone_number.observe(viewLifecycleOwner) {
+            viewModel.tv_phone_number.observe(lifecycleOwner) {
                 binding.phoneTILayout.hint = it
             }
-            viewModel.bt_login_text.observe(viewLifecycleOwner) {
+            viewModel.bt_login_text.observe(lifecycleOwner) {
                 binding.generateOtpButton.text = it
             }
-            viewModel.prevScreenLiveData.observe(viewLifecycleOwner) {
+            viewModel.prevScreenLiveData.observe(lifecycleOwner) {
                 previousScreenId = it
+            }
+
+            viewModel.nextScreenLiveData.observe(lifecycleOwner) {
+                nextScreenId_1 = it
             }
         }
 
@@ -166,13 +205,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 setOnEditorActionListener { _, actionId, _ ->
                     when (actionId) {
                         EditorInfo.IME_ACTION_DONE ->
-                            viewLifecycleOwner
-                                .lifecycleScope.launch(Dispatchers.IO) {
-                                    viewModel.login(
-                                        usernameText.text.toString(),
-                                        phoneText.text.toString()
-                                    )
-                                }
+                            lifecycleScope.launch(Dispatchers.IO) {
+                                viewModel.login(
+                                    usernameText.text.toString(),
+                                    phoneText.text.toString()
+                                )
+                            }
                     }
                     false
                 }
@@ -183,11 +221,11 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     binding,
                     arrayListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA)
                 ) {
-                    loading.visibility = View.VISIBLE
-                    viewLifecycleOwner
-                        .lifecycleScope.launch(Dispatchers.IO) {
-                            viewModel.login(usernameText.text.toString(), phoneText.text.toString())
-                        }
+                    loadingImage.visibility = View.VISIBLE
+
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                        viewModel.login(usernameText.text.toString(), phoneText.text.toString())
+                    }
                     //  shareViewModel.actionLiveData.postValue("compose")
                 }
 

@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newCoroutineContext
 import kotlinx.coroutines.withContext
@@ -143,28 +144,27 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
                 val time=System.currentTimeMillis()
                 Log.d(TAG, "uiReactiveAction: ${time}")
                 lifecycleScope.launch {
-                    withContext(Dispatchers.IO) {
-                        sendTextForSpeech(agreeButton.text.toString())
-                    }
 
-                    // After sendTextForSpeech completes, switch back to the main thread for navigation
                     requireActivity().runOnUiThread {
                         nav(nextScreenId_1)
                     }
+                    agreeButton.isEnabled=false
+                    delay(1000)
+                    agreeButton.isEnabled=true
                 Log.d(TAG, "uiReactiveAction: ${System.currentTimeMillis()-time}")
             }
                 }
             disagreeButton.setOnClickListener {
                 val time=System.currentTimeMillis()
                 Log.d(TAG, "uiReactiveAction:disagree ${time}")
-                lifecycleScope.launch(Dispatchers.Main) {
-                    withContext(Dispatchers.IO) {
-                        sendTextForSpeech(disagreeButton.text.toString())
-                    }
+                lifecycleScope.launch() {
+
                     requireActivity().runOnUiThread {
                         nav(previousScreenId)
                     }
-
+                    disagreeButton.isEnabled=false
+                    delay(1000)
+                    disagreeButton.isEnabled=true
                     Log.d(TAG, "uiReactiveAction:disagree ${System.currentTimeMillis()-time}")
                }
 

@@ -296,7 +296,7 @@
     },
     "login_screen": {
       "current_screen": "login_screen",
-      "next_screen": "login_to_home_screen",
+      "next_screen": "login_screen_to_otp_screen",
       "properties": {
         "color": {
           "primary_color": "",
@@ -420,7 +420,7 @@
       "select_screen": [
         {
           "current_screen": "login_screen",
-          "next_screen": "login_screen_to_home_screen",
+          "next_screen": "login_screen_to_otp_screen",
           "select_screen": [],
           "previous_screen": "finish"
         }

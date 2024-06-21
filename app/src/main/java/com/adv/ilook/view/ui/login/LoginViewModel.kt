@@ -5,6 +5,7 @@ import android.app.Activity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import android.util.Patterns
+import androidx.lifecycle.viewModelScope
 import com.adv.ilook.R
 import com.adv.ilook.model.data.workflow.LoginScreen
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FirebaseClient
@@ -19,6 +20,13 @@ import com.adv.ilook.view.base.BasicFunction
 import com.adv.ilook.view.ui.splash.TypeOfData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -29,7 +37,7 @@ class LoginViewModel @Inject constructor(
     private val loginRepository: CommonRepository,
     private val networkHelper: NetworkHelper
 ) : BaseViewModel(networkHelper) {
-  // private lateinit var loginScreen: LoginScreen
+    // private lateinit var loginScreen: LoginScreen
     private var loginScreen by Delegates.notNull<LoginScreen>()
     private val _nextScreenLiveData = MutableLiveData<Int>()
     var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
@@ -41,7 +49,7 @@ class LoginViewModel @Inject constructor(
             getWorkflowFromJson {
                 loginScreen = it.screens?.loginScreen!!
                 _nextScreenLiveData.postValue(BasicFunction.getScreens()[loginScreen.nextScreen] as Int)
-                _prevScreenLiveData.postValue( BasicFunction.getScreens()[loginScreen.previousScreen] as Int)
+                _prevScreenLiveData.postValue(BasicFunction.getScreens()[loginScreen.previousScreen] as Int)
                 function(TypeOfData.INT)
             }
             launch {
@@ -53,27 +61,94 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-   suspend fun login(username: String, phone: String) {
-        _loginResult.postValue(Resource.loading(true))
-       withContext(Dispatchers.IO) {
-           if (networkHelper.isNetworkConnected()) {
-               if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
-                   loginRepository.login(username, phone) {
-                       _loginResult.postValue(Resource.success("Login Success"))
-                   }
-               } else {
-                   _loginResult.postValue(Resource.loading(false))
-                   _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
-               }
+    fun loginEmit(username: String, phone: String): Flow<Resource<Any>> {
+        return flow {
+            emit(Resource.loading(true))
+            if (networkHelper.isNetworkConnected()) {
+                if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
+                    try {
+                        val result = withContext(Dispatchers.IO) {
+                            loginRepository.login(username, phone){
+                                launch {
+                                    emit(Resource.success(it))
+                                }
+                            }
+                        }
+                       // emit(Resource.success(result))
+                    } catch (e: Exception) {
+                        emit(Resource.error(msg = R.string.login_failed, null))
+                    }
 
 
-           } else {
-               _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
-           }
-       }
+                } else {
+                    emit(Resource.error(msg = R.string.login_failed, null))
+                }
+            } else {
+                emit(Resource.error(msg = R.string.network_error, null))
+            }
+            emit(Resource.loading(false))
+        }.flowOn(Dispatchers.IO)
+    }
 
+    fun loginFlow(username: String, phone: String) {
+        viewModelScope.launch {
+            loginEmit(username, phone).
+                    onStart { _loginResult.postValue(Resource.loading(true)) }
+                .onCompletion {  _loginResult.postValue(Resource.loading(false))}
+                .catch { e ->
+                    _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+                }
+                .collect { resource ->
+                    _loginResult.postValue(resource)
+                }
+        }
+    }
+
+    suspend fun login(username: String, phone: String) {
+        loginFlow(username, phone)
+   /*     withContext(Dispatchers.Main) {
+
+            _loginResult.postValue(Resource.loading(true))
+        }
+        //  delay(1000)
+        if (networkHelper.isNetworkConnected()) {
+            if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
+
+                try {
+                    withContext(Dispatchers.IO) {
+                        val result = loginRepository.login(username, phone) {
+                            _loginResult.postValue(Resource.loading(false))
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        _loginResult.postValue(Resource.loading(false))
+                        _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+                    }
+                }
+
+            } else {
+                withContext(Dispatchers.Main) {
+                    _loginResult.postValue(Resource.loading(false))
+                }
+                withContext(Dispatchers.Main) {
+                    _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+
+
+                    //
+                }
+            }
+        } else {
+            withContext(Dispatchers.Main) {
+                _loginResult.postValue(Resource.loading(false))
+
+                _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
+            }
+        }*/
 
     }
+
 
     fun loginDataChange(username: String, phone: String) {
         if (!isUserNameValid(username)) {
