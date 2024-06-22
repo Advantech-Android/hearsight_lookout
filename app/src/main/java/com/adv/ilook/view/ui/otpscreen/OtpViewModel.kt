@@ -2,10 +2,8 @@ package com.adv.ilook.view.ui.otpscreen
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.adv.ilook.model.data.workflow.LoginScreen
 import com.adv.ilook.model.data.workflow.OtpScreen
-import com.adv.ilook.model.db.remote.repository.CommonRepository
+import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.BasicFunction

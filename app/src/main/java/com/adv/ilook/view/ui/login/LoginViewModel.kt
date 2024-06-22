@@ -9,8 +9,7 @@ import android.util.Patterns
 import androidx.lifecycle.viewModelScope
 import com.adv.ilook.R
 import com.adv.ilook.model.data.workflow.LoginScreen
-import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FirebaseClient
-import com.adv.ilook.model.db.remote.repository.CommonRepository
+import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.model.util.responsehelper.Resource
 import com.adv.ilook.model.util.responsehelper.UiStatus
@@ -21,20 +20,20 @@ import com.adv.ilook.view.base.BasicFunction
 import com.adv.ilook.view.ui.splash.TypeOfData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import javax.inject.Inject
 import kotlin.properties.Delegates
-private const val  TAG="==>>LoginViewModel"
+
+private const val TAG = "==>>LoginViewModel"
+
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginRepository: CommonRepository,
@@ -66,24 +65,25 @@ class LoginViewModel @Inject constructor(
 
     fun loginEmit(username: String, phone: String): Flow<Resource<Any>> {
         return flow {
-           
-            emit(Resource.loading(true))
+
+            //    emit(Resource.loading(true))
             if (networkHelper.isNetworkConnected()) {
                 if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
                     try {
-                       //  withContext(Dispatchers.IO) {
-                             val result = loginRepository.login(username, phone){
+                        //  withContext(Dispatchers.IO) {
+                        val result = loginRepository.login(username, phone) {
 
-                            }
-                            emit(Resource.success(result))
-                       // }
-                       // emit(Resource.success(result))
+                             //   emit(Resource.success(it))
+
+                        }
+                        emit(Resource.success("login success"))
+                        // }
+                        // emit(Resource.success(result))
                     } catch (e: Exception) {
 
                         emit(Resource.error(msg = R.string.login_failed, e.message))
 
                     }
-
 
 
                 } else {
@@ -92,75 +92,79 @@ class LoginViewModel @Inject constructor(
             } else {
                 emit(Resource.error(msg = R.string.network_error, "network is needed"))
             }
-            emit(Resource.loading(false))
+//            emit(Resource.loading(false))
         }.flowOn(Dispatchers.IO)
     }
 
     fun loginFlow(username: String, phone: String) {
-        
+
         viewModelScope.launch {
-            loginEmit(username, phone).
-                    onStart {
-                        Log.d(TAG,"onStart")
-                        _loginResult.postValue(Resource.loading(true)) }
-                .onCompletion {    Log.d(TAG,"onCompletion")
-                    _loginResult.postValue(Resource.loading(false))}
+            loginEmit(username, phone).onStart {
+                Log.d(TAG, "onStart")
+                _loginResult.postValue(Resource.loading(true))
+            }
+                .onCompletion {
+                    Log.d(TAG, "onCompletion")
+                    _loginResult.postValue(Resource.loading(false))
+                }
                 .catch { e ->
-                    Log.d(TAG,"catch ${e.message}")
+                    Log.d(TAG, "catch ${e.message}")
                     _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
 
                 }
                 .collect { resource ->
-                    Log.d(TAG,"collect $resource")
-                    _loginResult.postValue(resource)
+                    Log.d(TAG, "collect $resource")
+                  runBlocking {  _loginResult.postValue(resource) }
 
                 }
         }
     }
 
     suspend fun login(username: String, phone: String) {
-        loginFlow(username, phone)
-   /*     withContext(Dispatchers.Main) {
+      //  loginFlow(username, phone)
 
-            _loginResult.postValue(Resource.loading(true))
+        runBlocking {
+                  withContext(Dispatchers.Main) {
+
+                  _loginResult.postValue(Resource.loading(true))
+              }
+              //  delay(1000)
+              if (networkHelper.isNetworkConnected()) {
+                  if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
+
+                      try {
+                          withContext(Dispatchers.IO) {
+                              val result = loginRepository.login(username, phone) {
+                                  _loginResult.postValue(Resource.success(it))
+                              }
+                          }
+
+                      } catch (e: Exception) {
+                          withContext(Dispatchers.Main) {
+                              _loginResult.postValue(Resource.loading(false))
+                              _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+                          }
+                      }
+
+                  } else {
+                      withContext(Dispatchers.Main) {
+                          _loginResult.postValue(Resource.loading(false))
+                      }
+                      withContext(Dispatchers.Main) {
+                          _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+
+
+                          //
+                      }
+                  }
+              } else {
+                  withContext(Dispatchers.Main) {
+                      _loginResult.postValue(Resource.loading(false))
+
+                      _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
+                  }
+              }
         }
-        //  delay(1000)
-        if (networkHelper.isNetworkConnected()) {
-            if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
-
-                try {
-                    withContext(Dispatchers.IO) {
-                        val result = loginRepository.login(username, phone) {
-                            _loginResult.postValue(Resource.loading(false))
-                        }
-                    }
-
-                } catch (e: Exception) {
-                    withContext(Dispatchers.Main) {
-                        _loginResult.postValue(Resource.loading(false))
-                        _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
-                    }
-                }
-
-            } else {
-                withContext(Dispatchers.Main) {
-                    _loginResult.postValue(Resource.loading(false))
-                }
-                withContext(Dispatchers.Main) {
-                    _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
-
-
-                    //
-                }
-            }
-        } else {
-            withContext(Dispatchers.Main) {
-                _loginResult.postValue(Resource.loading(false))
-
-                _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
-            }
-        }*/
-
     }
 
 

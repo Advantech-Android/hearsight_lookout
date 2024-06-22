@@ -2,7 +2,7 @@ package com.adv.ilook.model.data.firebasemodel
 
 import com.google.gson.annotations.SerializedName
 
-data class Response(
+data class Responses(
 
 	@field:SerializedName("app")
 	val app: App? = null

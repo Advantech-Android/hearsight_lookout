@@ -1,7 +1,6 @@
 package com.adv.ilook.model.db.remote.firebase.realtimedatabase
 
 import android.util.Log
-import com.adv.ilook.model.data.firebasemodel.Message
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -17,7 +16,7 @@ import javax.inject.Inject
 
 private const val TAG = "RealTimeDBImpl"
 class RealTimeDBImpl @Inject constructor(databaseReference: DatabaseReference) :
-    FireRealTimeDB(databaseReference) {
+    BaseRealTimeDataBase(databaseReference) {
 
     private lateinit var messagesRef: DatabaseReference
     private lateinit var databaseReference: DatabaseReference

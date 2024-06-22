@@ -130,6 +130,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
                 val loginResult = it ?: return@observe
                 Log.d(TAG, "liveDataObserver: $loginResult")
+                Log.d(TAG, "liveDataObserver: $it")
                 when (loginResult.status) {
                     Status.LOADING -> {
 

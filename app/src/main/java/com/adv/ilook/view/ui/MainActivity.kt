@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.adv.ilook.R
 import com.adv.ilook.databinding.ActivityMainBinding
+import com.adv.ilook.model.db.remote.repository.service.MainServiceActions
 import com.adv.ilook.view.base.BaseActivity
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.NavigationHost
@@ -36,7 +37,12 @@ class MainActivity :
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
         get() = ActivityMainBinding::inflate
     val sharedModel by viewModels<BaseViewModel>()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        startAppService()
+    }
     override fun setup(savedInstanceState: Bundle?) {
+
         viewBinding = binding
         Log.d(TAG, "setup: ")
         setupBackPressed()
@@ -47,7 +53,9 @@ class MainActivity :
 
 
     }
-
+    private fun startAppService() {
+        mainServiceRepository.startService( MainServiceActions.INIT_SERVICE.name)
+    }
     override fun findNavControl(): NavController? = findNavHostFragment()?.findNavController()
 
     override fun hideNavigation(animate: Boolean) {
@@ -80,6 +88,7 @@ class MainActivity :
     val callback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             // Handle the back button event here
+            mainServiceRepository.stopService()
             isEnabled = false
             findNavControl()?.run {
                 when (currentDestination?.id) {

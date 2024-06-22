@@ -5,11 +5,12 @@ import com.adv.ilook.model.db.local.source.CommonDataSource
 import com.adv.ilook.model.db.local.source.LocalDataSource
 import com.adv.ilook.model.db.remote.firebase.firestore.FireStoreDatabase
 import com.adv.ilook.model.db.remote.firebase.firestore.FireStoreImpl
-import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FireRealTimeDB
+import com.adv.ilook.model.db.remote.firebase.realtimedatabase.BaseRealTimeDataBase
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FirebaseClient
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.RealTimeDBImpl
-import com.adv.ilook.model.db.remote.repository.CommonRepository
-import com.adv.ilook.model.db.remote.repository.SeeForMeRepo
+import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
+import com.adv.ilook.model.db.remote.repository.apprepo.SeeForMeRepo
+import com.adv.ilook.model.db.remote.repository.service.MainService
 import com.adv.ilook.model.util.assets.IPref
 import com.adv.ilook.model.util.assets.PrefImpl
 import com.adv.ilook.view.base.BasicFunction
@@ -38,7 +39,10 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
+    @Provides
+    fun provideMainService(): MainService {
+        return MainService()
+    }
     @Singleton
     @Provides
     fun provideIoDispatcher() = Dispatchers.IO
@@ -94,7 +98,7 @@ object AppModule {
     @Provides
     fun provideFireRealTimeDBImpl(db: DatabaseReference):
 
-            /*FireRealTimeDB is Base ABS class class*/FireRealTimeDB = RealTimeDBImpl(db)
+            /*FireRealTimeDB is Base ABS class class*/BaseRealTimeDataBase = RealTimeDBImpl(db)
 
     @Singleton
     @Provides
@@ -114,7 +118,8 @@ object AppModule {
     }
     @Singleton
     @Provides
-    fun provideSeeForMeRepo( @AppModule.LocalDataSource local: CommonDataSource,firebaseClient: FirebaseClient,ioDispatcher:CoroutineDispatcher):SeeForMeRepo=SeeForMeRepo(local,firebaseClient,ioDispatcher)
+    fun provideSeeForMeRepo( @AppModule.LocalDataSource local: CommonDataSource,firebaseClient: FirebaseClient,ioDispatcher:CoroutineDispatcher): SeeForMeRepo =
+        SeeForMeRepo(local,firebaseClient,ioDispatcher)
 }
 
 @Module

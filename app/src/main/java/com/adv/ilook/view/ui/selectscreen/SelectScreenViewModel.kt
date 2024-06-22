@@ -2,15 +2,13 @@ package com.adv.ilook.view.ui.selectscreen
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.adv.ilook.model.data.workflow.LoginScreen
 import com.adv.ilook.model.data.workflow.SelectScreenType
-import com.adv.ilook.model.db.remote.repository.CommonRepository
+import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.BasicFunction
 import com.adv.ilook.view.ui.splash.TypeOfData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.scopes.ViewModelScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

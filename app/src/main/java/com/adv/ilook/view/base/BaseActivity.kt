@@ -1,27 +1,18 @@
 package com.adv.ilook.view.base
 
-import android.Manifest
-import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-import android.Manifest.permission.ACCESS_COARSE_LOCATION
-import android.Manifest.permission.ACCESS_FINE_LOCATION
-import android.Manifest.permission.BLUETOOTH_SCAN
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.SnackbarHostState
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph
@@ -29,30 +20,21 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.adv.ilook.R
+import com.adv.ilook.model.db.remote.repository.service.MainServiceActions
+import com.adv.ilook.model.db.remote.repository.service.MainServiceRepository
 import com.adv.ilook.model.util.extension.REQUEST_CODE_ALL
 import com.adv.ilook.model.util.extension.REQUEST_CODE_BACKGROUND_LOCATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_BLUETOOTH
 import com.adv.ilook.model.util.extension.REQUEST_CODE_LOCATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_MICROPHONE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_USB
-import com.adv.ilook.model.util.extension.requestAllPermission
-import com.adv.ilook.model.util.extension.requestBackgroundLocationPermission
-import com.adv.ilook.model.util.extension.requestBluetoothPermission
-import com.adv.ilook.model.util.extension.requestCameraMicrophonePermission
-import com.adv.ilook.model.util.extension.requestLocationPermission
 import com.adv.ilook.model.util.extension.requestUsbPermission
-import com.adv.ilook.model.util.permissions.Permission
 import com.adv.ilook.model.util.responsehelper.UiStatus
-import com.adv.ilook.view.ui.MainActivity2
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.PermissionX
-import com.permissionx.guolindev.request.ChainTask
-import com.permissionx.guolindev.request.ExplainScope
-import com.permissionx.guolindev.request.ForwardScope
-import com.permissionx.guolindev.request.PermissionBuilder
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 private const val TAG = "==>>BaseActivity"
 
@@ -67,16 +49,22 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
     abstract fun setup(savedInstanceState: Bundle?)
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
+
+    @Inject
+    lateinit var mainServiceRepository: MainServiceRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "onCreate: ")
         _binding = bindingInflater.invoke(layoutInflater)
+
         configureWorkflow()
         setContentView(requireNotNull(_binding).root)
         createNavControl()
         setup(savedInstanceState)
 
     }
+
+
 
     private fun createNavControl() {
         navHostFragment =
@@ -136,7 +124,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
     }
 
     fun SnackbarHostState.showSnackBar(scope: CoroutineScope, status: UiStatus) {
-        if (status is UiStatus.LoginFormState){
+        if (status is UiStatus.LoginFormState) {
             scope.launch {
                 showSnackbar(
                     message = getString(status.message!!),

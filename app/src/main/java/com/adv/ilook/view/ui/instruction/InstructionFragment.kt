@@ -50,7 +50,7 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
                             Toast.LENGTH_SHORT
                         )
                             .show()
-                        nav(previousScreenId)
+                      if(previousScreenId!=0)  nav(previousScreenId)
                     }
 
                     else -> {
@@ -160,7 +160,7 @@ class InstructionFragment() : BaseFragment<FragmentInstructionBinding>() {
                 lifecycleScope.launch() {
 
                     requireActivity().runOnUiThread {
-                        nav(previousScreenId)
+                        if(previousScreenId!=0) nav(previousScreenId)
                     }
                     disagreeButton.isEnabled=false
                     delay(1000)
