@@ -2,6 +2,7 @@ package com.adv.ilook.view.ui.login
 
 
 import android.app.Activity
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import android.util.Patterns
@@ -27,11 +28,13 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 import kotlin.properties.Delegates
-
+private const val  TAG="==>>LoginViewModel"
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginRepository: CommonRepository,
@@ -63,43 +66,54 @@ class LoginViewModel @Inject constructor(
 
     fun loginEmit(username: String, phone: String): Flow<Resource<Any>> {
         return flow {
+           
             emit(Resource.loading(true))
             if (networkHelper.isNetworkConnected()) {
                 if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
                     try {
-                        val result = withContext(Dispatchers.IO) {
-                            loginRepository.login(username, phone){
-                                launch {
-                                    emit(Resource.success(it))
-                                }
+                       //  withContext(Dispatchers.IO) {
+                             val result = loginRepository.login(username, phone){
+
                             }
-                        }
+                            emit(Resource.success(result))
+                       // }
                        // emit(Resource.success(result))
                     } catch (e: Exception) {
-                        emit(Resource.error(msg = R.string.login_failed, null))
+
+                        emit(Resource.error(msg = R.string.login_failed, e.message))
+
                     }
 
 
+
                 } else {
-                    emit(Resource.error(msg = R.string.login_failed, null))
+                    emit(Resource.error(msg = R.string.login_failed, "name and phone is invalid"))
                 }
             } else {
-                emit(Resource.error(msg = R.string.network_error, null))
+                emit(Resource.error(msg = R.string.network_error, "network is needed"))
             }
             emit(Resource.loading(false))
         }.flowOn(Dispatchers.IO)
     }
 
     fun loginFlow(username: String, phone: String) {
+        
         viewModelScope.launch {
             loginEmit(username, phone).
-                    onStart { _loginResult.postValue(Resource.loading(true)) }
-                .onCompletion {  _loginResult.postValue(Resource.loading(false))}
+                    onStart {
+                        Log.d(TAG,"onStart")
+                        _loginResult.postValue(Resource.loading(true)) }
+                .onCompletion {    Log.d(TAG,"onCompletion")
+                    _loginResult.postValue(Resource.loading(false))}
                 .catch { e ->
+                    Log.d(TAG,"catch ${e.message}")
                     _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+
                 }
                 .collect { resource ->
+                    Log.d(TAG,"collect $resource")
                     _loginResult.postValue(resource)
+
                 }
         }
     }

@@ -59,13 +59,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
+
         _viewBinding = binding
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPress)
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { uiReactiveAction() }
-       // viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { liveDataObserver() }
+        // viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { liveDataObserver() }
         viewLifecycleOwnerLiveData.observe(this) { lifecycleOwner ->
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                 liveDataObserver(lifecycleOwner)
@@ -120,8 +121,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                                 phoneText.error = getString(loginState.phoneError)
                             }
                         }
-
-
                     }
                 })
 
@@ -146,12 +145,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                             Glide.with(requireActivity()).load(R.drawable.loading)
                                 .into(loadingImage)
                         }
-
-
                     }
 
                     Status.ERROR -> {
-
+                        Log.d(TAG, "ERROR----")
                         showLoginFailed(loginResult.message as Int)
 
                     }
@@ -205,12 +202,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 setOnEditorActionListener { _, actionId, _ ->
                     when (actionId) {
                         EditorInfo.IME_ACTION_DONE ->
-                            lifecycleScope.launch(Dispatchers.IO) {
-                                viewModel.login(
-                                    usernameText.text.toString(),
-                                    phoneText.text.toString()
-                                )
-                            }
+                        lifecycleScope.launch(Dispatchers.IO) {
+                            viewModel.loginDataChange(
+                                usernameText.text.toString(),
+                                phoneText.text.toString()
+                            )
+                            viewModel.login(
+                                usernameText.text.toString(),
+                                phoneText.text.toString()
+                            )
+                        }
                     }
                     false
                 }
@@ -221,9 +222,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     binding,
                     arrayListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA)
                 ) {
+                    viewModel.loginDataChange(
+                        usernameText.text.toString(),
+                        phoneText.text.toString()
+                    )
                     loadingImage.visibility = View.VISIBLE
 
-                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                         viewModel.login(usernameText.text.toString(), phoneText.text.toString())
                     }
                     //  shareViewModel.actionLiveData.postValue("compose")

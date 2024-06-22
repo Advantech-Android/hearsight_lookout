@@ -109,9 +109,16 @@ open class BaseViewModel @Inject constructor(private val networkHelper: NetworkH
     }
 
     private suspend fun getWorkflowPojo(jsonString: String, function: (Workflow) -> Unit) {
-        workflow = gson.fromJson(jsonString, Workflow::class.java)
-        function(workflow)
+        try {
+            workflow = gson.fromJson(jsonString, Workflow::class.java)
+
+            function(workflow)
+        } catch (e: Exception) {
+
+        }
+
     }
+
     private var locale: Int = 0
     private lateinit var localeSpeech: Locale
     private lateinit var mediaPlayer: MediaPlayer
@@ -123,8 +130,8 @@ open class BaseViewModel @Inject constructor(private val networkHelper: NetworkH
         R.raw.notification_sound
     )
 
-    fun initializeMediaPlayer(context :Context, currentSongIndex: Int){
-       this.currentSongIndex=currentSongIndex
+    fun initializeMediaPlayer(context: Context, currentSongIndex: Int) {
+        this.currentSongIndex = currentSongIndex
         mediaPlayer = MediaPlayer.create(context, button_tones[currentSongIndex])
         mediaPlayer.setOnCompletionListener {
 
@@ -139,6 +146,7 @@ open class BaseViewModel @Inject constructor(private val networkHelper: NetworkH
             mediaPlayer.start()
         }
     }
+
     private fun stopSong() {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.stop()
@@ -148,7 +156,8 @@ open class BaseViewModel @Inject constructor(private val networkHelper: NetworkH
     }
 
 
-    fun sendTextForSpeech(tts: TextToSpeech,
+    fun sendTextForSpeech(
+        tts: TextToSpeech,
         text: String,
         volume: Float = 0.9f,
         pan: Float = 0.0f,
@@ -161,7 +170,7 @@ open class BaseViewModel @Inject constructor(private val networkHelper: NetworkH
         localeSpeech = Locale(language, country)
         locale = if (tts.isLanguageAvailable(localeSpeech) >= TextToSpeech.LANG_AVAILABLE) {
             tts.setLanguage(localeSpeech)
-        }else{
+        } else {
             tts.setLanguage(Locale.US)
         }
         val params = Bundle().apply {
@@ -174,18 +183,20 @@ open class BaseViewModel @Inject constructor(private val networkHelper: NetworkH
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, "")
 
     }
-    fun onInitSpeech(status:Int){
+
+    fun onInitSpeech(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             if (locale == TextToSpeech.LANG_MISSING_DATA || locale == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e(TAG, "The Language not supported!")
-               _speechCompletedLiveData.value = "failed"
+                _speechCompletedLiveData.value = "failed"
             } else {
                 _speechCompletedLiveData.value = "completed"
             }
         }
     }
-    fun onDestroySpeech(tts: TextToSpeech){
-            tts.stop()
-            tts.shutdown()
+
+    fun onDestroySpeech(tts: TextToSpeech) {
+        tts.stop()
+        tts.shutdown()
     }
 }
