@@ -17,8 +17,7 @@ interface IPref {
 }
 
 class PrefImpl @Inject constructor(@ApplicationContext private val context: Context) : IPref {
-    private val pref: SharedPreferences =
-        context.getSharedPreferences("_pref", Context.MODE_PRIVATE)
+    private val pref: SharedPreferences = context.getSharedPreferences("_pref", Context.MODE_PRIVATE)
     private val editor: SharedPreferences.Editor = pref.edit()
 
     override fun put(key: String, value: Any) {

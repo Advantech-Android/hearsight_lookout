@@ -41,12 +41,10 @@ private const val TAG = "==>>SplashFragment"
 @AndroidEntryPoint
 class SplashFragment : BaseFragment<FragmentSplashBinding>() {
 
-
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentSplashBinding
-        get() = FragmentSplashBinding::inflate
+    get() = FragmentSplashBinding::inflate
     private var _viewBinding: FragmentSplashBinding? = null
     val viewModel by viewModels<SplashViewModel>()
-
     private val handler = Handler(Looper.getMainLooper())
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
@@ -112,6 +110,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d(TAG, "onDestroy: ")
+
     }
 
     override fun onDetach() {

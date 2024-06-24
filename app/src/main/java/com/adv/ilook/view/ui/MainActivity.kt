@@ -30,8 +30,7 @@ import dagger.hilt.android.AndroidEntryPoint
 private const val TAG = "==>>MainActivity"
 
 @AndroidEntryPoint
-class MainActivity :
-    BaseActivity<ActivityMainBinding>(), NavigationHost {
+class MainActivity : BaseActivity<ActivityMainBinding>(), NavigationHost {
     private var viewBinding: ActivityMainBinding? = null
 
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
@@ -39,7 +38,16 @@ class MainActivity :
     val sharedModel by viewModels<BaseViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        startAppService()
+        if (android.os.Build.VERSION.SDK_INT >= 34){
+            onRequestPermissionListener(binding, arrayListOf(Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION, "android.permission.CAPTURE_VIDEO_OUTPUT",
+                "android.permission.PROJECT_MEDIA")) {
+                startAppService()
+            }
+        }
+        else
+        {
+            startAppService()
+        }
     }
     override fun setup(savedInstanceState: Bundle?) {
 

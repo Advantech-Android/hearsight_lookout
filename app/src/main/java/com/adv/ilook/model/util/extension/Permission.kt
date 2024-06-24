@@ -19,6 +19,7 @@ const val REQUEST_CODE_MICROPHONE = 103
 const val REQUEST_CODE_LOCATION = 104
 const val REQUEST_CODE_BACKGROUND_LOCATION = 105
 const val REQUEST_CODE_ALL = 106
+const val REQUEST_CODE_NOTIFICATION = 107
 
 private const val TAG = "==>>Permission"
 fun AppCompatActivity.hasPermission(
@@ -62,7 +63,8 @@ fun AppCompatActivity.requestBluetoothPermission(
 }
 
 // Request USB permission
-fun AppCompatActivity.requestUsbPermission(
+fun AppCompatActivity.
+        requestUsbPermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
     var permissionManifest: List<String> = listOf(READ_EXTERNAL_STORAGE)
@@ -83,6 +85,31 @@ fun AppCompatActivity.requestUsbPermission(
         }
     }
 }
+
+fun AppCompatActivity.
+        requestNotificationPermission(
+    activity: Activity, success: (result: Boolean) -> Unit
+) {
+    var permissionManifest: List<String> = listOf()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) permissionManifest =
+        listOf(
+            FOREGROUND_SERVICE_MEDIA_PROJECTION,FOREGROUND_SERVICE,
+           FOREGROUND_SERVICE_MEDIA_PROJECTION,
+            "android.permission.CAPTURE_VIDEO_OUTPUT",
+            "android.permission.PROJECT_MEDIA")
+
+    hasPermission(activity, permissionManifest) {
+        if (!it) {
+            ActivityCompat.requestPermissions(
+                activity, permissionManifest.toTypedArray(), REQUEST_CODE_NOTIFICATION
+            )
+            success(false)
+        } else {
+            success(true)
+        }
+    }
+}
+
 
 // Request Microphone permission
 fun AppCompatActivity.requestCameraMicrophonePermission(
