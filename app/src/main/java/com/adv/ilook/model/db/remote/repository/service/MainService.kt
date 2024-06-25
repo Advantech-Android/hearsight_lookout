@@ -73,9 +73,9 @@ class MainService  : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
 
-              // startForeground(NOTIFICATION_ID, notification,ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
+             startForeground(NOTIFICATION_ID, notification,ServiceInfo.FOREGROUND_SERVICE_TYPE_CAMERA or ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
                 //  startForeground(1, notification.build())
-                ContextCompat.startForegroundService(this,notificationIntent)
+               // ContextCompat.startForegroundService(this,notificationIntent)
             }else{
                 startForeground(
                     NOTIFICATION_ID,

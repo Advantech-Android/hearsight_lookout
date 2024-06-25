@@ -1,5 +1,6 @@
 package com.adv.ilook.view.base
 
+import android.Manifest
 import android.Manifest.permission.CAPTURE_AUDIO_OUTPUT
 import android.Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
@@ -23,15 +24,15 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.adv.ilook.R
-import com.adv.ilook.model.db.remote.repository.service.MainServiceActions
 import com.adv.ilook.model.db.remote.repository.service.MainServiceRepository
 import com.adv.ilook.model.util.extension.REQUEST_CODE_ALL
 import com.adv.ilook.model.util.extension.REQUEST_CODE_BACKGROUND_LOCATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_BLUETOOTH
+import com.adv.ilook.model.util.extension.REQUEST_CODE_CAMERA_MICROPHONE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_LOCATION
-import com.adv.ilook.model.util.extension.REQUEST_CODE_MICROPHONE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_NOTIFICATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_USB
+import com.adv.ilook.model.util.extension.requestCameraMicrophonePermission
 import com.adv.ilook.model.util.extension.requestNotificationPermission
 import com.adv.ilook.model.util.extension.requestUsbPermission
 import com.adv.ilook.model.util.responsehelper.UiStatus
@@ -148,6 +149,10 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
         val permission = PermissionX.init(this)
         val permissionBuilder = permission.permissions(listOfPermission)
         permissionBuilder.request { allGranted, listOfAccepted, listOfDenied ->
+            Log.d(
+                TAG,
+                "askPermission() called with: allGranted = $allGranted, listOfAccepted = $listOfAccepted, listOfDenied = $listOfDenied"
+            )
             if (allGranted) {
                 sharedModel.actionLiveData.postValue("REQUEST_CODE_BLUETOOTH-TRUE")
                 success(true)
@@ -169,7 +174,10 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                             }
                         }
 
-                        POST_NOTIFICATIONS, FOREGROUND_SERVICE_MEDIA_PROJECTION, CAPTURE_AUDIO_OUTPUT,"android.permission.CAPTURE_VIDEO_OUTPUT",
+                        POST_NOTIFICATIONS,
+                        FOREGROUND_SERVICE_MEDIA_PROJECTION,
+                        CAPTURE_AUDIO_OUTPUT,
+                        "android.permission.CAPTURE_VIDEO_OUTPUT",
                         "android.permission.PROJECT_MEDIA"->{
                             requestNotificationPermission(this) { result ->
                                 if (result) {
@@ -179,6 +187,23 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
 
                                         TAG,
                                         "onRequestPermissionListener: Notification permission denied, manually requested"
+                                    )
+                                    success(false)
+                                }
+                            }
+                        }
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.FOREGROUND_SERVICE_CAMERA,
+                        Manifest.permission.FOREGROUND_SERVICE_MICROPHONE ->{
+                            requestCameraMicrophonePermission(this){ result ->
+                                if (result) {
+                                    success(true)
+                                } else {
+                                    Log.d(
+
+                                        TAG,
+                                        "onRequestPermissionListener: Camera and Microphone permission denied, manually requested"
                                     )
                                     success(false)
                                 }
@@ -326,7 +351,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
             }
 
 
-            REQUEST_CODE_MICROPHONE -> {
+            REQUEST_CODE_CAMERA_MICROPHONE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(
                         TAG,

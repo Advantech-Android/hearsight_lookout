@@ -2,9 +2,12 @@ package com.adv.ilook.view.ui
 
 import android.Manifest
 import android.content.Intent
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
@@ -32,22 +35,39 @@ private const val TAG = "==>>MainActivity"
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>(), NavigationHost {
     private var viewBinding: ActivityMainBinding? = null
-
+    private lateinit var mediaProjectionManager: MediaProjectionManager
+    private var mediaProjection: MediaProjection? = null
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
         get() = ActivityMainBinding::inflate
     val sharedModel by viewModels<BaseViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (android.os.Build.VERSION.SDK_INT >= 34){
-            onRequestPermissionListener(binding, arrayListOf(Manifest.permission.POST_NOTIFICATIONS,Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION, "android.permission.CAPTURE_VIDEO_OUTPUT",
-                "android.permission.PROJECT_MEDIA")) {
-                startAppService()
+        mediaProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+        if (android.os.Build.VERSION.SDK_INT >= 34) {
+            onRequestPermissionListener(
+                binding,
+                arrayListOf(
+                    Manifest.permission.POST_NOTIFICATIONS,
+                    Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION,
+                    "android.permission.CAPTURE_VIDEO_OUTPUT",
+                    "android.permission.PROJECT_MEDIA",
+                    Manifest.permission.RECORD_AUDIO,
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.FOREGROUND_SERVICE_CAMERA,
+                    Manifest.permission.FOREGROUND_SERVICE_MICROPHONE
+                )
+            ) { result ->
+                if (result)
+                    startAppService()
+                else Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show()
             }
-        }
-        else
-        {
+        } else {
             startAppService()
         }
+    }
+    private fun startScreenCapture() {
+        val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
+        startActivityForResult(captureIntent, REQUEST_CODE_SCREEN_CAPTURE)
     }
     override fun setup(savedInstanceState: Bundle?) {
 
@@ -61,9 +81,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), NavigationHost {
 
 
     }
+
     private fun startAppService() {
-        mainServiceRepository.startService( MainServiceActions.INIT_SERVICE.name)
+        mainServiceRepository.startService(MainServiceActions.INIT_SERVICE.name)
     }
+
     override fun findNavControl(): NavController? = findNavHostFragment()?.findNavController()
 
     override fun hideNavigation(animate: Boolean) {
@@ -103,9 +125,11 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), NavigationHost {
                     R.id.splashFragment -> {
                         Log.d(TAG, "handleOnBackPressed: splash")
                     }
+
                     R.id.loginFragment -> {
                         Log.d(TAG, "handleOnBackPressed: login")
                     }
+
                     else -> {
 
                     }
