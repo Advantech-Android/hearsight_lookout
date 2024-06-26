@@ -20,6 +20,7 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -186,13 +187,30 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
     private fun uiReactiveAction() {
         binding.apply {
-            usernameText.afterTextChanged {
-                viewModel.loginDataChange(
-                    usernameText.text.toString(),
-                    phoneText.text.toString()
-                )
+
+            usernameText.apply {
+                doOnTextChanged { text, start, before, count ->
+                    Log.d(
+                        TAG,
+                        "uiReactiveAction() called with: usernameText => text = $text, start = $start, before = $before, count = $count"
+                    )
+                }
+                afterTextChanged { str->
+                    Log.d(TAG, "uiReactiveAction: $str")
+                    
+                    viewModel.loginDataChange(
+                        usernameText.text.toString(),
+                        phoneText.text.toString()
+                    )
+                }
             }
             phoneText.apply {
+                doOnTextChanged { text, start, before, count ->
+                    Log.d(
+                        TAG,
+                        "uiReactiveAction() called with: phoneText => text = $text, start = $start, before = $before, count = $count"
+                    )
+                }
                 afterTextChanged {
                     viewModel.loginDataChange(
                         usernameText.text.toString(),

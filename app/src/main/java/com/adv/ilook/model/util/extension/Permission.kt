@@ -20,6 +20,7 @@ const val REQUEST_CODE_LOCATION = 104
 const val REQUEST_CODE_BACKGROUND_LOCATION = 105
 const val REQUEST_CODE_ALL = 106
 const val REQUEST_CODE_NOTIFICATION = 107
+const val REQUEST_CODE_SCREEN_CAPTURE = 108
 
 private const val TAG = "==>>Permission"
 fun AppCompatActivity.hasPermission(
@@ -66,13 +67,13 @@ fun AppCompatActivity.requestBluetoothPermission(
 fun AppCompatActivity.requestUsbPermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
-    var permissionManifest: List<String> = listOf(READ_EXTERNAL_STORAGE)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) permissionManifest =
-        listOf(MANAGE_EXTERNAL_STORAGE)
-    else listOf(
-        READ_EXTERNAL_STORAGE,
-        WRITE_EXTERNAL_STORAGE
-    )
+    var permissionManifest = mutableListOf("")
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        permissionManifest.add(MANAGE_EXTERNAL_STORAGE)
+    else {
+        permissionManifest.add(WRITE_EXTERNAL_STORAGE)
+        permissionManifest.add(READ_EXTERNAL_STORAGE)
+    }
     hasPermission(activity, permissionManifest) {
         if (!it) {
             ActivityCompat.requestPermissions(
@@ -88,13 +89,15 @@ fun AppCompatActivity.requestUsbPermission(
 fun AppCompatActivity.requestNotificationPermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
-    var permissionManifest: List<String> = listOf()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) permissionManifest =
-        listOf(POST_NOTIFICATIONS,
-            FOREGROUND_SERVICE_MEDIA_PROJECTION,
-            FOREGROUND_SERVICE,
-            "android.permission.CAPTURE_VIDEO_OUTPUT",
-            "android.permission.PROJECT_MEDIA"        )
+    val permissionManifest = mutableListOf(FOREGROUND_SERVICE)
+    if (Build.VERSION.SDK_INT >= 33) {
+        permissionManifest.add(POST_NOTIFICATIONS)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            permissionManifest.add(FOREGROUND_SERVICE_MEDIA_PROJECTION)
+          /*  permissionManifest.add("android.permission.PROJECT_MEDIA")
+            permissionManifest.add("android.permission.CAPTURE_VIDEO_OUTPUT")*/
+        }
+    }
 
     hasPermission(activity, permissionManifest) {
         if (!it) {
@@ -168,13 +171,17 @@ fun AppCompatActivity.requestLocationPermission(
 fun AppCompatActivity.requestBackgroundLocationPermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
+    val permissionManifest =
+        mutableListOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
-
-        hasPermission(activity, listOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+        permissionManifest.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+            permissionManifest.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        hasPermission(activity,permissionManifest) {
             if (!it) {
                 ActivityCompat.requestPermissions(
                     activity,
-                    arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+                    permissionManifest.toTypedArray(),
                     REQUEST_CODE_BACKGROUND_LOCATION
                 )
                 success(false)

@@ -1,18 +1,22 @@
 package com.adv.ilook.view.base
 
 import android.Manifest
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.Manifest.permission.CAPTURE_AUDIO_OUTPUT
 import android.Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.SnackbarHostState
@@ -31,7 +35,9 @@ import com.adv.ilook.model.util.extension.REQUEST_CODE_BLUETOOTH
 import com.adv.ilook.model.util.extension.REQUEST_CODE_CAMERA_MICROPHONE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_LOCATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_NOTIFICATION
+import com.adv.ilook.model.util.extension.REQUEST_CODE_SCREEN_CAPTURE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_USB
+import com.adv.ilook.model.util.extension.requestBackgroundLocationPermission
 import com.adv.ilook.model.util.extension.requestCameraMicrophonePermission
 import com.adv.ilook.model.util.extension.requestNotificationPermission
 import com.adv.ilook.model.util.extension.requestUsbPermission
@@ -154,7 +160,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                 "askPermission() called with: allGranted = $allGranted, listOfAccepted = $listOfAccepted, listOfDenied = $listOfDenied"
             )
             if (allGranted) {
-                sharedModel.actionLiveData.postValue("REQUEST_CODE_BLUETOOTH-TRUE")
+                sharedModel.actionLiveData.postValue(listOfAccepted.toString())
                 success(true)
             } else {
                 listOfDenied.filter {
@@ -173,12 +179,9 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                                 }
                             }
                         }
-
                         POST_NOTIFICATIONS,
                         FOREGROUND_SERVICE_MEDIA_PROJECTION,
-                        CAPTURE_AUDIO_OUTPUT,
-                        "android.permission.CAPTURE_VIDEO_OUTPUT",
-                        "android.permission.PROJECT_MEDIA"->{
+                        CAPTURE_AUDIO_OUTPUT->{
                             requestNotificationPermission(this) { result ->
                                 if (result) {
                                     success(true)
@@ -200,10 +203,22 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                                 if (result) {
                                     success(true)
                                 } else {
+                                    Log.d(TAG,"onRequestPermissionListener: Camera and Microphone permission denied, manually requested" )
+                                    success(false)
+                                }
+                            }
+                        }
+                        Manifest.permission.FOREGROUND_SERVICE_LOCATION,
+                        Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                        ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION ->{
+                            requestBackgroundLocationPermission(this){ result ->
+                                if (result) {
+                                    success(true)
+                                } else {
                                     Log.d(
 
                                         TAG,
-                                        "onRequestPermissionListener: Camera and Microphone permission denied, manually requested"
+                                        "onRequestPermissionListener:Location permission denied, manually requested"
                                     )
                                     success(false)
                                 }
@@ -396,8 +411,26 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
 
             REQUEST_CODE_BACKGROUND_LOCATION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult: Background location permission granted")
-                    sharedModel.actionLiveData.postValue("REQUEST_CODE_BACKGROUND_LOCATION-TRUE")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        if (ContextCompat.checkSelfPermission(
+                                this,
+                                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            Log.d(
+                                TAG,
+                                "onRequestPermissionsResult: Background location permission granted"
+                            )
+                            sharedModel.actionLiveData.postValue("REQUEST_CODE_BACKGROUND_LOCATION-TRUE")
+                        } else {
+
+                            Log.d(
+                                TAG,
+                                "onRequestPermissionsResult: Background location permission denied"
+                            )
+                            sharedModel.actionLiveData.postValue("REQUEST_CODE_BACKGROUND_LOCATION-FALSE")
+                        }
+                    }
                 } else {
                     sharedModel.actionLiveData.postValue("REQUEST_CODE_BACKGROUND_LOCATION-FALSE")
                 }
@@ -416,13 +449,15 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
 
             REQUEST_CODE_NOTIFICATION -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "onRequestPermissionsResult: All permission granted")
+                    Log.d(TAG, "onRequestPermissionsResult: REQUEST_CODE_NOTIFICATION ==> All permission granted")
                     sharedModel.actionLiveData.postValue("REQUEST_CODE_NOTIFICATION-TRUE")
                 } else {
-                    Log.d(TAG, "onRequestPermissionsResult: All permission denied")
+                    Log.d(TAG, "onRequestPermissionsResult: REQUEST_CODE_NOTIFICATION ==> All permission denied")
                     sharedModel.actionLiveData.postValue("REQUEST_CODE_NOTIFICATION-FALSE")
                 }
             }
         }
     }
+
+
 }

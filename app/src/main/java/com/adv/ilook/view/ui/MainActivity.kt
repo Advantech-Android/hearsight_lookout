@@ -14,6 +14,7 @@ import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.get
@@ -23,7 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.adv.ilook.R
 import com.adv.ilook.databinding.ActivityMainBinding
+import com.adv.ilook.model.db.remote.repository.service.MainService
 import com.adv.ilook.model.db.remote.repository.service.MainServiceActions
+import com.adv.ilook.model.util.extension.REQUEST_CODE_SCREEN_CAPTURE
 import com.adv.ilook.view.base.BaseActivity
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.NavigationHost
@@ -40,51 +43,72 @@ class MainActivity : BaseActivity<ActivityMainBinding>(), NavigationHost {
     override val bindingInflater: (LayoutInflater) -> ActivityMainBinding
         get() = ActivityMainBinding::inflate
     val sharedModel by viewModels<BaseViewModel>()
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mediaProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+    override fun setup(savedInstanceState: Bundle?) {
+        viewBinding = binding
+        setupBackPressed()
         if (android.os.Build.VERSION.SDK_INT >= 34) {
+            Log.d(TAG, "setup: -------if")
             onRequestPermissionListener(
                 binding,
-                arrayListOf(
-                    Manifest.permission.POST_NOTIFICATIONS,
+                arrayListOf( Manifest.permission.POST_NOTIFICATIONS,
                     Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION,
-                    "android.permission.CAPTURE_VIDEO_OUTPUT",
-                    "android.permission.PROJECT_MEDIA",
+                    Manifest.permission.FOREGROUND_SERVICE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.CAMERA,
                     Manifest.permission.FOREGROUND_SERVICE_CAMERA,
-                    Manifest.permission.FOREGROUND_SERVICE_MICROPHONE
-                )
+                    Manifest.permission.FOREGROUND_SERVICE_MICROPHONE )
             ) { result ->
                 if (result)
                     startAppService()
-                else Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show()
+                else {
+                    Toast.makeText(this, "permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
         } else {
+            Log.d(TAG, "setup: ----->else")
             startAppService()
         }
+
+
     }
+
+    private fun startAppService(isMediaProjection: Boolean = false) {
+        if (isMediaProjection) mainServiceRepository.startMediaProjectionService(MainServiceActions.HANDLE_PROJECTION.name)
+        else mainServiceRepository.startService(MainServiceActions.INIT_SERVICE.name)
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mediaProjectionManager =
+            getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+
+        sharedModel.actionLiveData.observe(this) {
+            Log.d(TAG, "onCreate: actionLiveData ==> ${it}")
+            if (it == "REQUEST_CODE_NOTIFICATION-TRUE") startScreenCapture()
+        }
+    }
+
     private fun startScreenCapture() {
         val captureIntent = mediaProjectionManager.createScreenCaptureIntent()
         startActivityForResult(captureIntent, REQUEST_CODE_SCREEN_CAPTURE)
     }
-    override fun setup(savedInstanceState: Bundle?) {
 
-        viewBinding = binding
-        Log.d(TAG, "setup: ")
-        setupBackPressed()
-        sharedModel.actionLiveData.observe(this) {
-            Log.d(TAG, "setup: $it")
-            // nav(R.id.action_loginFragment_to_mainActivity2)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_SCREEN_CAPTURE) {
+            if (resultCode == RESULT_OK && data != null) {
+                mediaProjection = mediaProjectionManager.getMediaProjection(resultCode, data)
+                startAppService(isMediaProjection = true)
+            } else {
+                Toast.makeText(this, "Screen capture permission denied", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data)
         }
-
-
     }
 
-    private fun startAppService() {
-        mainServiceRepository.startService(MainServiceActions.INIT_SERVICE.name)
-    }
+
 
     override fun findNavControl(): NavController? = findNavHostFragment()?.findNavController()
 
