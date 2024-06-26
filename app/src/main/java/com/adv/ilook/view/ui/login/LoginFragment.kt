@@ -32,7 +32,6 @@ import com.adv.ilook.model.util.responsehelper.Status
 import com.adv.ilook.model.util.responsehelper.UiStatus
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.base.BaseViewModel
-import com.adv.ilook.view.ui.MainActivity2
 
 import com.adv.ilook.view.ui.splash.SplashViewModel
 import com.bumptech.glide.Glide

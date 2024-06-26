@@ -15,10 +15,11 @@ import okhttp3.internal.format
 const val REQUEST_CODE_CAMERA = 100
 const val REQUEST_CODE_BLUETOOTH = 101
 const val REQUEST_CODE_USB = 102
-const val REQUEST_CODE_MICROPHONE = 103
+const val REQUEST_CODE_CAMERA_MICROPHONE = 103
 const val REQUEST_CODE_LOCATION = 104
 const val REQUEST_CODE_BACKGROUND_LOCATION = 105
 const val REQUEST_CODE_ALL = 106
+const val REQUEST_CODE_NOTIFICATION = 107
 
 private const val TAG = "==>>Permission"
 fun AppCompatActivity.hasPermission(
@@ -77,23 +78,51 @@ fun AppCompatActivity.requestUsbPermission(
             ActivityCompat.requestPermissions(
                 activity, permissionManifest.toTypedArray(), REQUEST_CODE_USB
             )
-             success(false)
+            success(false)
         } else {
             success(true)
         }
     }
 }
 
+fun AppCompatActivity.requestNotificationPermission(
+    activity: Activity, success: (result: Boolean) -> Unit
+) {
+    var permissionManifest: List<String> = listOf()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) permissionManifest =
+        listOf(POST_NOTIFICATIONS,
+            FOREGROUND_SERVICE_MEDIA_PROJECTION,
+            FOREGROUND_SERVICE,
+            "android.permission.CAPTURE_VIDEO_OUTPUT",
+            "android.permission.PROJECT_MEDIA"        )
+
+    hasPermission(activity, permissionManifest) {
+        if (!it) {
+            ActivityCompat.requestPermissions(
+                activity, permissionManifest.toTypedArray(), REQUEST_CODE_NOTIFICATION
+            )
+            success(false)
+        } else {
+            success(true)
+        }
+    }
+}
+
+
 // Request Microphone permission
 fun AppCompatActivity.requestCameraMicrophonePermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
-    val permissionManifest: List<String> =
-        listOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA)
+    val permissionManifest =
+        mutableListOf(RECORD_AUDIO, CAMERA)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        permissionManifest.add(FOREGROUND_SERVICE_MICROPHONE)
+        permissionManifest.add(FOREGROUND_SERVICE_CAMERA)
+    }
     hasPermission(activity, permissionManifest) {
         if (!it) {
             ActivityCompat.requestPermissions(
-                activity, permissionManifest.toTypedArray(), REQUEST_CODE_MICROPHONE
+                activity, permissionManifest.toTypedArray(), REQUEST_CODE_CAMERA_MICROPHONE
             )
             success(false)
         } else {
@@ -106,12 +135,12 @@ fun AppCompatActivity.requestCameraMicrophonePermission(
 fun AppCompatActivity.requestCameraPermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
-    hasPermission(activity, listOf(Manifest.permission.CAMERA)) {
+    hasPermission(activity, listOf(CAMERA)) {
         if (!it) {
             ActivityCompat.requestPermissions(
-                activity, arrayOf(Manifest.permission.CAMERA), REQUEST_CODE_CAMERA
+                activity, arrayOf(CAMERA), REQUEST_CODE_CAMERA
             )
-             success(false)
+            success(false)
         } else {
             success(true)
         }
@@ -127,7 +156,7 @@ fun AppCompatActivity.requestLocationPermission(
             ActivityCompat.requestPermissions(
                 activity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_LOCATION
             )
-             success(false)
+            success(false)
         } else {
 
             success(true)
@@ -185,7 +214,7 @@ fun AppCompatActivity.requestAllPermission(
                 permissionManifest.toTypedArray(),
                 REQUEST_CODE_ALL
             )
-             success(false)
+            success(false)
         } else {
             success(true)
         }

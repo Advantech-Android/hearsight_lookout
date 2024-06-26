@@ -108,8 +108,8 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), TextToSpeech.OnInitL
 
     fun nav(id: Int, bundle: Bundle = Bundle.EMPTY) {
         Log.d(TAG, "nav: $id")
-        (requireActivity() as NavigationHost).findNavControl()?.navigate(id, bundle)
-        // navController.navigate(id, bundle)
+       // (requireActivity() as NavigationHost).findNavControl()?.navigate(id, bundle)
+        navController.navigate(id, bundle)
     }
 
     protected fun findNavControl() =

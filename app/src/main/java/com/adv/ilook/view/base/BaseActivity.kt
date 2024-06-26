@@ -1,6 +1,10 @@
 package com.adv.ilook.view.base
 
+import android.Manifest
+import android.Manifest.permission.CAPTURE_AUDIO_OUTPUT
+import android.Manifest.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION
 import android.Manifest.permission.MANAGE_EXTERNAL_STORAGE
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.pm.PackageManager
@@ -20,14 +24,16 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.adv.ilook.R
-import com.adv.ilook.model.db.remote.repository.service.MainServiceActions
 import com.adv.ilook.model.db.remote.repository.service.MainServiceRepository
 import com.adv.ilook.model.util.extension.REQUEST_CODE_ALL
 import com.adv.ilook.model.util.extension.REQUEST_CODE_BACKGROUND_LOCATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_BLUETOOTH
+import com.adv.ilook.model.util.extension.REQUEST_CODE_CAMERA_MICROPHONE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_LOCATION
-import com.adv.ilook.model.util.extension.REQUEST_CODE_MICROPHONE
+import com.adv.ilook.model.util.extension.REQUEST_CODE_NOTIFICATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_USB
+import com.adv.ilook.model.util.extension.requestCameraMicrophonePermission
+import com.adv.ilook.model.util.extension.requestNotificationPermission
 import com.adv.ilook.model.util.extension.requestUsbPermission
 import com.adv.ilook.model.util.responsehelper.UiStatus
 import com.google.android.material.snackbar.Snackbar
@@ -40,8 +46,7 @@ private const val TAG = "==>>BaseActivity"
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionListener {
     @Suppress("UNCHECKED_CAST")
-    protected val binding: VB
-        get() = _binding as VB
+    protected val binding: VB get() = _binding as VB
     private var _binding: ViewBinding? = null
     private val sharedModel by viewModels<BaseViewModel>()
     val _sharedModel get() = sharedModel
@@ -144,6 +149,10 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
         val permission = PermissionX.init(this)
         val permissionBuilder = permission.permissions(listOfPermission)
         permissionBuilder.request { allGranted, listOfAccepted, listOfDenied ->
+            Log.d(
+                TAG,
+                "askPermission() called with: allGranted = $allGranted, listOfAccepted = $listOfAccepted, listOfDenied = $listOfDenied"
+            )
             if (allGranted) {
                 sharedModel.actionLiveData.postValue("REQUEST_CODE_BLUETOOTH-TRUE")
                 success(true)
@@ -159,6 +168,42 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
 
                                         TAG,
                                         "onRequestPermissionListener: USB permission denied, manually requested"
+                                    )
+                                    success(false)
+                                }
+                            }
+                        }
+
+                        POST_NOTIFICATIONS,
+                        FOREGROUND_SERVICE_MEDIA_PROJECTION,
+                        CAPTURE_AUDIO_OUTPUT,
+                        "android.permission.CAPTURE_VIDEO_OUTPUT",
+                        "android.permission.PROJECT_MEDIA"->{
+                            requestNotificationPermission(this) { result ->
+                                if (result) {
+                                    success(true)
+                                } else {
+                                    Log.d(
+
+                                        TAG,
+                                        "onRequestPermissionListener: Notification permission denied, manually requested"
+                                    )
+                                    success(false)
+                                }
+                            }
+                        }
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.FOREGROUND_SERVICE_CAMERA,
+                        Manifest.permission.FOREGROUND_SERVICE_MICROPHONE ->{
+                            requestCameraMicrophonePermission(this){ result ->
+                                if (result) {
+                                    success(true)
+                                } else {
+                                    Log.d(
+
+                                        TAG,
+                                        "onRequestPermissionListener: Camera and Microphone permission denied, manually requested"
                                     )
                                     success(false)
                                 }
@@ -305,7 +350,8 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                 }
             }
 
-            REQUEST_CODE_MICROPHONE -> {
+
+            REQUEST_CODE_CAMERA_MICROPHONE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Log.d(
                         TAG,
@@ -364,6 +410,17 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                 } else {
                     Log.d(TAG, "onRequestPermissionsResult: All permission denied")
                     sharedModel.actionLiveData.postValue("REQUEST_CODE_ALL-FALSE")
+                }
+            }
+
+
+            REQUEST_CODE_NOTIFICATION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult: All permission granted")
+                    sharedModel.actionLiveData.postValue("REQUEST_CODE_NOTIFICATION-TRUE")
+                } else {
+                    Log.d(TAG, "onRequestPermissionsResult: All permission denied")
+                    sharedModel.actionLiveData.postValue("REQUEST_CODE_NOTIFICATION-FALSE")
                 }
             }
         }
