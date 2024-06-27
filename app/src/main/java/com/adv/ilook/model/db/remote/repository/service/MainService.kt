@@ -102,7 +102,6 @@ class MainService : Service(), CoroutineScope {
     }
 
     private fun startServiceWithNotification() {
-
         Log.d(TAG, "startServiceWithNotification: Service running state - $isServiceRunning")
 
         val notificationIntent = Intent(this, MainActivity::class.java)

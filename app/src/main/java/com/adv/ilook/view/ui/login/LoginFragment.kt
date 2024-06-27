@@ -1,45 +1,33 @@
 package com.adv.ilook.view.ui.login
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.annotation.StringRes
-import androidx.fragment.app.Fragment
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.StringRes
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.adv.ilook.R
 import com.adv.ilook.databinding.FragmentLoginBinding
-import com.adv.ilook.databinding.FragmentSplashBinding
+import com.adv.ilook.model.util.assets.BundleKeys.USER_NAME_KEY
+import com.adv.ilook.model.util.assets.BundleKeys.USER_PHONE_KEY
 import com.adv.ilook.model.util.extension.afterTextChanged
-import com.adv.ilook.model.util.responsehelper.Resource
 import com.adv.ilook.model.util.responsehelper.Status
-import com.adv.ilook.model.util.responsehelper.UiStatus
+import com.adv.ilook.model.util.responsehelper.UiStatusLogin
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.base.BaseViewModel
-
-import com.adv.ilook.view.ui.splash.SplashViewModel
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 private const val TAG = "==>>LoginFragment"
@@ -101,33 +89,22 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
             viewModel.loginFormState.observe(lifecycleOwner,
                 Observer { loginFormState ->
-                    val loginState: UiStatus = loginFormState ?: return@Observer
+                    val loginState: UiStatusLogin = loginFormState ?: return@Observer
                     when (loginState) {
-                        is UiStatus.Idle -> {}
-                        is UiStatus.Loading -> {}
-                        is UiStatus.Success -> {
-                            Log.d(TAG, "liveDataObserver: ------")
-                        }
-
-                        is UiStatus.Error -> {}
-                        is UiStatus.OtpFormState -> {}
-                        is UiStatus.LoginFormState -> {
+                        is UiStatusLogin.LoginFormState -> {
                             // disable login button unless both username / password is valid
                             generateOtpButton.isEnabled = loginState.isDataValid
                             if (loginState.usernameError != null) {
-                                usernameText.error = getString(loginState.usernameError)
+                                usernameText.error = loginState.usernameError.toString()
                             }
                             if (loginState.phoneError != null) {
-                                phoneText.error = getString(loginState.phoneError)
+                                phoneText.error = loginState.phoneError.toString()
                             }
                         }
                     }
                 })
 
-            viewModel.loginResult.observe(
-                lifecycleOwner
-            ) { it ->
-
+            viewModel.loginResult.observe(lifecycleOwner) { it ->
                 val loginResult = it ?: return@observe
                 Log.d(TAG, "liveDataObserver: $loginResult")
                 Log.d(TAG, "liveDataObserver: $it")
@@ -155,7 +132,12 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     }
 
                     Status.SUCCESS -> {
-                        nav(nextScreenId_1)
+                        nav(nextScreenId_1,Bundle().apply {
+                            val userName=usernameText.text.toString().trim()
+                            val userPhone=phoneText.text.toString().trim()
+                            putString(USER_NAME_KEY,userName)
+                            putString(USER_PHONE_KEY,userPhone)
+                        })
                         updateUiWithUser(loginResult.data as String)
                     }
                 }
@@ -212,8 +194,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 doOnTextChanged { text, start, before, count ->
                     Log.d(
                         TAG,
-                        "uiReactiveAction() called with: phoneText => text = $text, start = $start, before = $before, count = $count"
-                    )
+                        "uiReactiveAction() called with: phoneText => text = $text, start = $start, before = $before, count = $count")
                     viewModel.loginDataChange(
                         usernameText.text.toString(),
                         phoneText.text.toString()
@@ -248,16 +229,17 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     binding,
                     arrayListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA)
                 ) {
+                    val userName=usernameText.text.toString().trim()
+                    val phone = phoneText.text.toString().trim()
                     viewModel.loginDataChange(
-                        usernameText.text.toString(),
-                        phoneText.text.toString()
+                        userName,
+                        phone
                     )
                     loadingImage.visibility = View.VISIBLE
-
                     viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        viewModel.login(usernameText.text.toString(), phoneText.text.toString())
+                        viewModel.login(userName, phone)
                     }
-                    //  shareViewModel.actionLiveData.postValue("compose")
+
                 }
 
             }

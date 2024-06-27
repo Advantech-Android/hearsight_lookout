@@ -41,7 +41,8 @@ import com.adv.ilook.model.util.extension.requestBackgroundLocationPermission
 import com.adv.ilook.model.util.extension.requestCameraMicrophonePermission
 import com.adv.ilook.model.util.extension.requestNotificationPermission
 import com.adv.ilook.model.util.extension.requestUsbPermission
-import com.adv.ilook.model.util.responsehelper.UiStatus
+
+import com.adv.ilook.model.util.responsehelper.UiStatusLogin
 import com.google.android.material.snackbar.Snackbar
 import com.permissionx.guolindev.PermissionX
 import kotlinx.coroutines.CoroutineScope
@@ -134,11 +135,11 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
         }
     }
 
-    fun SnackbarHostState.showSnackBar(scope: CoroutineScope, status: UiStatus) {
-        if (status is UiStatus.LoginFormState) {
+    fun SnackbarHostState.showSnackBar(scope: CoroutineScope, status: Any) {
+        if (status is UiStatusLogin.LoginFormState) {
             scope.launch {
                 showSnackbar(
-                    message = getString(status.message!!),
+                    message = getString(status.message!! as Int),
                     withDismissAction = true
                 )
             }

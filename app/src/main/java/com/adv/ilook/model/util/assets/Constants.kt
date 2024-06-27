@@ -17,7 +17,11 @@ object SharedPrefKey{
     const val APP_CONFIGURE_DEVICES:String = "APP_CONFIGURE_DEVICES"
     const val APP_SWITCH_STATUS:String = "APP_SWITCH_STATUS"
     const val APP_AVAILABLE_ROOMS_DOWNLOAD:String = "APP_AVAILABLE_ROOMS_DOWNLOAD"
+}
 
+object IntentKeys {}
+object BundleKeys {
 
-
+    const val USER_NAME_KEY:String = "USER_NAME_KEY"
+    const val USER_PHONE_KEY:String = "USER_PHONE_KEY"
 }

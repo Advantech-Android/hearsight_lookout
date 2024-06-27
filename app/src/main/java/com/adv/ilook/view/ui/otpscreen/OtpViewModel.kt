@@ -5,6 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import com.adv.ilook.model.data.workflow.OtpScreen
 import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.util.network.NetworkHelper
+import com.adv.ilook.model.util.responsehelper.Resource
+import com.adv.ilook.model.util.responsehelper.UiStatusLogin
+import com.adv.ilook.model.util.responsehelper.UiStatusOtp
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.BasicFunction
 import com.adv.ilook.view.ui.splash.TypeOfData
@@ -33,13 +36,52 @@ class OtpViewModel  @Inject constructor(
                 _prevScreenLiveData.postValue( BasicFunction.getScreens()[otpScreen.previousScreen] as Int)
                 function(TypeOfData.INT)
             }
+
             launch {
-               /* _tv_login_header.postValue(otpScreen.views?.textView?.header?.text!!)
-                _tv_username.postValue(otpScreen.views?.textView?.userName?.text!!)
-                _tv_phone_number.postValue(otpScreen.views?.textView?.mobileNumber?.text!!)
-                _bt_login_text.postValue(otpScreen.views?.buttonView?.login?.text!!)*/
+                _tv_otp_header.postValue(otpScreen.views?.textView?.header?.text!!)
+                _tv_otp_helper_text.postValue(otpScreen.views?.textView?.header?.helperText!!)
+                _et_otp_number_text.postValue(otpScreen.views?.textView?.otpCode?.text!!)
+                _bt_otp_enable.postValue(otpScreen.views?.textView?.otpCode?.enable!!)
+                _bt_login_text.postValue(otpScreen.views?.buttonView?.login?.text!!)
+                _bt_login_enable.postValue(otpScreen.views?.buttonView?.generateOtp?.enable!!)
+                _toast_load_message.postValue(otpScreen.views?.toastView?.loading?.text!!)
+                _toast_success_message.postValue(otpScreen.views?.toastView?.loginSuccess?.text!!)
+                _toast_failure_message.postValue(otpScreen.views?.toastView?.loginFailure?.text!!)
             }
         }
     }
 
+
+    private val _otpForm = MutableLiveData<UiStatusOtp>()
+    val otpForm: LiveData<UiStatusOtp> = _otpForm
+
+    private val _otpResult = MutableLiveData<Resource<Any>>()
+    val otpResult: LiveData<Resource<Any>> = _otpResult
+
+    private val _tv_otp_header = MutableLiveData<String>()
+    val tv_otp_header: LiveData<String> = _tv_otp_header
+
+    private val _tv_otp_helper_text = MutableLiveData<String>()
+    val tv_otp_helper_text: LiveData<String> = _tv_otp_helper_text
+
+    private val _et_otp_number_text = MutableLiveData<String>()
+    val et_otp_number_text: LiveData<String> = _et_otp_number_text
+
+    private val _bt_login_text = MutableLiveData<String>()
+    val bt_login_text: LiveData<String> = _bt_login_text
+
+    private val _bt_otp_enable = MutableLiveData<Boolean>()
+    val bt_otp_enable: LiveData<Boolean> = _bt_otp_enable
+    private val _bt_sim_validation_enable = MutableLiveData<Boolean>()
+    val bt_sim_validation_enable: LiveData<Boolean> = _bt_sim_validation_enable
+
+    private val _bt_login_enable = MutableLiveData<Boolean>()
+    val bt_login_enable: LiveData<Boolean> = _bt_login_enable
+
+    private val _toast_success_message = MutableLiveData<String>()
+    var toast_success_message: LiveData<String> = _toast_success_message
+    private val _toast_failure_message = MutableLiveData<String>()
+    var toast_failure_message: LiveData<String> = _toast_failure_message
+    private val _toast_load_message = MutableLiveData<String>()
+    var toast_load_message: LiveData<String> = _toast_load_message
 }

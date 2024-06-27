@@ -2,36 +2,40 @@ package com.adv.ilook.model.util.responsehelper
 
 import org.checkerframework.checker.guieffect.qual.UI
 
-sealed class UiStatus {
-    data object Idle : UiStatus()
+sealed class UiStatusLogin {
+/*    data object Idle : UiStatus()
     data object Error : UiStatus()
     data object Loading : UiStatus()
-    data object Success : UiStatus()
+    data object Success : UiStatus()*/
     data class LoginFormState(
-        val usernameError: Int? = null,
-        val phoneError: Int? = null,
-        val message: Int? = null,
+        val usernameError: Any? = null,
+        val phoneError: Any? = null,
+        val message: Any? = null,
         val isDataValid: Boolean = false
-    ) : UiStatus()
+    ) : UiStatusLogin()
 
-    data class OtpFormState(
-        val usernameError: Int? = null,
-        val phoneError: Int? = null,
-        val message: Int? = null,
-        val isDataValid: Boolean = false
-    ) : UiStatus()
+
 
     override fun toString(): String {
         return when (this) {
             is Nothing -> ""
-            is Idle -> "Idle"
+       /*     is Idle -> "Idle"
             is Loading -> "Loading"
-            is Success -> "Success"
+            is Success -> "Success"*/
             is LoginFormState -> "LoginFormState"
-            is OtpFormState -> "OtpFormState"
+          /*  is OtpFormState -> "OtpFormState"*/
             is Error -> "Error"
 
 
         }
     }
+}
+
+sealed class UiStatusOtp{
+    data class OtpFormState(
+        val usernameError: Any? = null,
+        val phoneError: Any? = null,
+        val message: Any? = null,
+        val isDataValid: Boolean = false
+    ) : UiStatusOtp()
 }

@@ -12,7 +12,8 @@ import com.adv.ilook.model.data.workflow.LoginScreen
 import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.model.util.responsehelper.Resource
-import com.adv.ilook.model.util.responsehelper.UiStatus
+
+import com.adv.ilook.model.util.responsehelper.UiStatusLogin
 
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.BasicFunction
@@ -58,7 +59,11 @@ class LoginViewModel @Inject constructor(
                 _tv_login_header.postValue(loginScreen.views?.textView?.header?.text!!)
                 _tv_username.postValue(loginScreen.views?.textView?.userName?.text!!)
                 _tv_phone_number.postValue(loginScreen.views?.textView?.mobileNumber?.text!!)
+                _validation_message.postValue(loginScreen.views?.toastView?.loginSuccess?.text!!)
+                _validation_name_error.postValue(loginScreen.views?.textView?.userName?.helperText!!)
+                _validation_phone_error.postValue(loginScreen.views?.textView?.mobileNumber?.helperText!!)
                 _bt_login_text.postValue(loginScreen.views?.buttonView?.login?.text!!)
+
             }
         }
     }
@@ -152,9 +157,6 @@ class LoginViewModel @Inject constructor(
                       }
                       withContext(Dispatchers.Main) {
                           _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
-
-
-                          //
                       }
                   }
               } else {
@@ -170,12 +172,12 @@ class LoginViewModel @Inject constructor(
 
     fun loginDataChange(username: String, phone: String) {
         if (!isUserNameValid(username)) {
-            _loginForm.postValue(UiStatus.LoginFormState(usernameError = R.string.invalid_username))
+            _loginForm.postValue(UiStatusLogin.LoginFormState(usernameError = validation_name_error.value))
         } else if (!isPhoneNumberValid(phone)) {
-            _loginForm.postValue(UiStatus.LoginFormState(phoneError = R.string.invalid_phonenumber))
+            _loginForm.postValue(UiStatusLogin.LoginFormState(phoneError = validation_phone_error.value))
         } else {
-            _loginForm.postValue(UiStatus.LoginFormState(message = R.string.valid_sucess))
-            _loginForm.postValue(UiStatus.LoginFormState(isDataValid = true))
+            _loginForm.postValue(UiStatusLogin.LoginFormState(message =validation_message.value))
+            _loginForm.postValue(UiStatusLogin.LoginFormState(isDataValid = true))
         }
     }
 
@@ -197,8 +199,8 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    private val _loginForm = MutableLiveData<UiStatus>()
-    val loginFormState: LiveData<UiStatus> = _loginForm
+    private val _loginForm = MutableLiveData<UiStatusLogin>()
+    val loginFormState: LiveData<UiStatusLogin> = _loginForm
 
     private val _loginResult = MutableLiveData<Resource<Any>>()
     val loginResult: LiveData<Resource<Any>> = _loginResult
@@ -212,6 +214,14 @@ class LoginViewModel @Inject constructor(
     var tv_username: LiveData<String> = _tv_username
     private val _tv_phone_number = MutableLiveData<String>()
     var tv_phone_number: LiveData<String> = _tv_phone_number
+
+    private val _validation_message = MutableLiveData<String>()
+    var validation_message: LiveData<String> = _validation_message
+    private val _validation_phone_error = MutableLiveData<String>()
+    var validation_phone_error: LiveData<String> = _validation_phone_error
+    private val _validation_name_error = MutableLiveData<String>()
+    var validation_name_error: LiveData<String> = _validation_name_error
+
 
     private val _bt_login_text = MutableLiveData<String>()
     var bt_login_text: LiveData<String> = _bt_login_text

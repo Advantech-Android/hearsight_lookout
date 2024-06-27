@@ -12,6 +12,8 @@ import com.adv.ilook.R
 import com.adv.ilook.databinding.FragmentLoginBinding
 import com.adv.ilook.databinding.FragmentOtpBinding
 import com.adv.ilook.databinding.FragmentSplashBinding
+import com.adv.ilook.model.util.assets.BundleKeys.USER_NAME_KEY
+import com.adv.ilook.model.util.assets.BundleKeys.USER_PHONE_KEY
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.base.BaseViewModel
 
@@ -56,7 +58,12 @@ class OtpFragment() :  BaseFragment<FragmentOtpBinding>(){
     }
 
     override fun setup(savedInstanceState: Bundle?) {
-        Log.d(TAG, "setup: ")
+        Log.d(TAG, "setup:")
+        arguments?.apply {
+           val userName= getString(USER_NAME_KEY)
+           val userPhone=  getString(USER_PHONE_KEY)
+            Log.d(TAG, "setup: ${userName},${userPhone}")
+        }
         _viewBinding = binding
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPress)
         lifecycleScope.launch(Dispatchers.Main) {
@@ -67,8 +74,30 @@ class OtpFragment() :  BaseFragment<FragmentOtpBinding>(){
     }
 
     private fun liveDataObserver() {
+        binding.apply {
+            viewModel.tv_otp_header.observe(viewLifecycleOwner) {
+                binding.headerText.text = it
+            }
+            viewModel.tv_otp_helper_text.observe(viewLifecycleOwner) {
+                binding.subContentText.text = it
+            }
+            viewModel.et_otp_number_text.observe(viewLifecycleOwner) {
+                binding.otpInputTIEditText.hint = it
+            }
+            viewModel.bt_login_enable.observe(viewLifecycleOwner) {
+                binding.loginButton.isEnabled = it
+            }
+            viewModel.bt_login_text.observe(viewLifecycleOwner){
+                binding.loginButton.text = it
+            }
+            viewModel.bt_sim_validation_enable.observe(viewLifecycleOwner) {
+                binding.headerText.isEnabled = it
+            }
+            viewModel.bt_login_enable.observe(viewLifecycleOwner) {
+                binding.headerText.isEnabled = it
+            }
 
-
+        }
     }
 
     private fun uiReactiveAction() {
