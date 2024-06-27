@@ -39,6 +39,7 @@ class OtpFragment() :  BaseFragment<FragmentOtpBinding>(){
     override var nextScreenId_1 by Delegates.notNull<Int>()
     override var nextScreenId_2 by Delegates.notNull<Int>()
     override var previousScreenId by Delegates.notNull<Int>()
+     var isSimValidation by Delegates.notNull<Boolean>()
     private val   onBackPress = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             isEnabled = true
@@ -91,7 +92,7 @@ class OtpFragment() :  BaseFragment<FragmentOtpBinding>(){
                 binding.loginButton.text = it
             }
             viewModel.bt_sim_validation_enable.observe(viewLifecycleOwner) {
-                binding.headerText.isEnabled = it
+                isSimValidation = it
             }
             viewModel.bt_login_enable.observe(viewLifecycleOwner) {
                 binding.headerText.isEnabled = it
