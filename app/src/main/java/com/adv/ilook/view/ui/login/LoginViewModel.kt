@@ -51,6 +51,8 @@ class LoginViewModel @Inject constructor(
         withContext(Dispatchers.IO) {
             getWorkflowFromJson {
                 loginScreen = it.screens?.loginScreen!!
+                Log.d(TAG, "init: prev ->${loginScreen.previousScreen.toString()}")
+                Log.d(TAG, "init: next ->${loginScreen.nextScreen.toString()}")
                 _nextScreenLiveData.postValue(BasicFunction.getScreens()[loginScreen.nextScreen] as Int)
                 _prevScreenLiveData.postValue(BasicFunction.getScreens()[loginScreen.previousScreen] as Int)
                 function(TypeOfData.INT)

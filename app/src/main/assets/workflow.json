@@ -1008,7 +1008,7 @@
             }
           },
           "otp_code": {
-            "text": "Enter otp",
+            "text": "000-000",
             "helper_text": "",
             "text_color": "",
             "helper_text_color": "",
@@ -1066,7 +1066,7 @@
             }
           },
           "verify_otp": {
-            "text": "Verify OTP",
+            "text": "Login Now",
             "text_color": "",
             "text_size": 15,
             "input_text_length": {
@@ -1185,7 +1185,7 @@
           "previous_screen": "finish"
         }
       ],
-      "previous_screen": "finish"
+      "previous_screen": "otp_screen_to_login_screen"
     },
     "device_control_screen": {
       "current_screen": "device_control_screen",

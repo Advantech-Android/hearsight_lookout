@@ -130,9 +130,9 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), TextToSpeech.OnInitL
 
     fun View.showSnackbar(
         view: View,
-        msg: String,
-        length: Int,
-        actionMessage: CharSequence?,
+        msg: String="",
+        length: Int=Snackbar.LENGTH_SHORT,
+        actionMessage: CharSequence?="Ok",
         action: (View) -> Unit,
         action2: (View) -> Unit
     ) {

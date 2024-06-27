@@ -1,5 +1,6 @@
 package com.adv.ilook.view.ui.otpscreen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.adv.ilook.model.data.workflow.OtpScreen
@@ -18,6 +19,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
+private const val TAG = "==>>OtpViewModel"
 @HiltViewModel
 class OtpViewModel  @Inject constructor(
     private val loginRepository: CommonRepository,
@@ -32,18 +34,23 @@ class OtpViewModel  @Inject constructor(
         withContext(Dispatchers.IO) {
             getWorkflowFromJson {
                 otpScreen = it.screens?.otpScreen!!
-                _nextScreenLiveData.postValue(BasicFunction.getScreens()[otpScreen.nextScreen] as Int)
-                _prevScreenLiveData.postValue( BasicFunction.getScreens()[otpScreen.previousScreen] as Int)
+                Log.d(TAG, "init: prev ->${otpScreen.previousScreen.toString()}")
+                Log.d(TAG, "init: next ->${otpScreen.nextScreen.toString()}")
+                launch(Dispatchers.Main){
+                    _nextScreenLiveData.postValue(BasicFunction.getScreens()[otpScreen.nextScreen.toString()] as Int)
+                    _prevScreenLiveData.postValue( BasicFunction.getScreens()[otpScreen.previousScreen.toString()] as Int)
+                }
+
                 function(TypeOfData.INT)
             }
 
-            launch {
+            launch (Dispatchers.Main){
                 _tv_otp_header.postValue(otpScreen.views?.textView?.header?.text!!)
                 _tv_otp_helper_text.postValue(otpScreen.views?.textView?.header?.helperText!!)
                 _et_otp_number_text.postValue(otpScreen.views?.textView?.otpCode?.text!!)
                 _bt_otp_enable.postValue(otpScreen.views?.textView?.otpCode?.enable!!)
-                _bt_login_text.postValue(otpScreen.views?.buttonView?.login?.text!!)
-                _bt_login_enable.postValue(otpScreen.views?.buttonView?.generateOtp?.enable!!)
+                _bt_login_text.postValue(otpScreen.views?.buttonView?.verifyOtp?.text!!)
+                _bt_login_enable.postValue(otpScreen.views?.buttonView?.verifyOtp?.enable!!)
                 _toast_load_message.postValue(otpScreen.views?.toastView?.loading?.text!!)
                 _toast_success_message.postValue(otpScreen.views?.toastView?.loginSuccess?.text!!)
                 _toast_failure_message.postValue(otpScreen.views?.toastView?.loginFailure?.text!!)

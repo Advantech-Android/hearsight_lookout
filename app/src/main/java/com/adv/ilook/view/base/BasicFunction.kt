@@ -73,6 +73,8 @@ class BasicFunction @Inject constructor(context: Context?) {
             scr["login_screen_to_home_screen"] = R.id.action_splashFragment_to_loginFragment
             scr["login_screen_to_instruction_screen"] = R.id.action_loginFragment_to_instructionFragment
             scr["login_screen_to_otp_screen"] = R.id.action_loginFragment_to_otpFragment
+            scr["otp_screen_to_login_screen"] = R.id.action_otpFragment_to_loginFragment
+            scr["otp_screen_to_home_screen"] = R.id.action_otpFragment_to_loginFragment
 
             scr["select_screen_type_to_select_screen_type"] = R.id.action_selectScreenFragment_self
             scr["select_screen_type_to_instruction_screen"] =R.id.action_selectScreenFragment_to_instructionFragment

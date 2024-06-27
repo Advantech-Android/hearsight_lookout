@@ -44,25 +44,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override var previousScreenId by Delegates.notNull<Int>()
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLoginBinding
         get() = FragmentLoginBinding::inflate
-
-    override fun setup(savedInstanceState: Bundle?) {
-        Log.d(TAG, "setup: ")
-
-        _viewBinding = binding
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPress)
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.init { }
-        }
-        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { uiReactiveAction() }
-        // viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { liveDataObserver() }
-        viewLifecycleOwnerLiveData.observe(this) { lifecycleOwner ->
-            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
-                liveDataObserver(lifecycleOwner)
-            }
-        }
-
-    }
-
     // Create an OnBackPressedCallback to handle the back button event
     private val onBackPress = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -83,7 +64,22 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             }
         }
     }
+    override fun setup(savedInstanceState: Bundle?) {
+        Log.d(TAG, "setup: ")
+        _viewBinding = binding
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, onBackPress)
+        lifecycleScope.launch(Dispatchers.Main) {
+            viewModel.init { }
+        }
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { uiReactiveAction() }
+        // viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) { liveDataObserver() }
+        viewLifecycleOwnerLiveData.observe(this) { lifecycleOwner ->
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+                liveDataObserver(lifecycleOwner)
+            }
+        }
 
+    }
     private fun liveDataObserver(lifecycleOwner: LifecycleOwner) {
         binding.apply {
 
@@ -157,7 +153,19 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 binding.generateOtpButton.text = it
             }
             viewModel.prevScreenLiveData.observe(lifecycleOwner) {
-                previousScreenId = it
+
+                if (!(it == -1 or 0)) {
+                    previousScreenId = it
+                } else {
+                    generateOtpButton.showSnackbar(this.generateOtpButton,
+                        msg = "Can't found any screen",
+                        actionMessage = "Ok", length = 2, action = { v1 ->
+
+                        }, action2 = { v2 ->
+
+                        }
+                    )
+                }
             }
 
             viewModel.nextScreenLiveData.observe(lifecycleOwner) {
