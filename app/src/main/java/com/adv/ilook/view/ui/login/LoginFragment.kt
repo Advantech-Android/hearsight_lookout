@@ -194,6 +194,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         TAG,
                         "uiReactiveAction() called with: usernameText => text = $text, start = $start, before = $before, count = $count"
                     )
+                    viewModel.loginDataChange(
+                        usernameText.text.toString(),
+                        phoneText.text.toString()
+                    )
                 }
                 afterTextChanged { str->
                     Log.d(TAG, "uiReactiveAction: $str")
@@ -209,6 +213,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     Log.d(
                         TAG,
                         "uiReactiveAction() called with: phoneText => text = $text, start = $start, before = $before, count = $count"
+                    )
+                    viewModel.loginDataChange(
+                        usernameText.text.toString(),
+                        phoneText.text.toString()
                     )
                 }
                 afterTextChanged {
