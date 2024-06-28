@@ -81,9 +81,8 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
         _viewBinding = binding
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
+            uiReactiveAction()
         }
-        uiReactiveAction()
-        // liveDataObserver()
         viewLifecycleOwnerLiveData.observe(this) { lifecycleOwner ->
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                 liveDataObserver(lifecycleOwner)

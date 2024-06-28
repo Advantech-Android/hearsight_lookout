@@ -93,7 +93,7 @@ class OtpViewModel @Inject constructor(
          sharedPreference.put(APP_USERLOGIN,true)
         }
         withContext(Dispatchers.IO) {
-            loginRepository.login(userName,userPhone,true){
+            loginRepository.login(userName,userPhone,true){ isDone,message->
 
             }
         }

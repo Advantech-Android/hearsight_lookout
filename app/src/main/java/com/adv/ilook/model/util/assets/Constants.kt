@@ -30,6 +30,11 @@ object BundleKeys {
 object FirebaseKeys {
     const val user_name:String = "user_name"
     const val status:String = "status"
+    const val call_event:String = "call_event"
+    const val contacts:String = "contacts"
+    const val latest_event:String = "latest_event"
+    const val login_status:String = "latest_event"
+    const val workflow:String = "workflow"
 }
 enum class UserStatus {
  ONLINE,OFFLINE,UNREGISTER,IN_CALL

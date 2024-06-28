@@ -12,8 +12,8 @@ import retrofit2.Response
 
 interface CommonRepository {
     suspend fun getWorkflow(): Response<Workflow>?
-    suspend fun login(username: String, phone: String,isLogged: Boolean,callback: (Any?) -> Unit): Response<Responses>?
-    suspend fun logout(username: String, phone: String,isLogged: Boolean,callback: (Any?) -> Unit): Response<Workflow>?
+    suspend fun login(username: String, phone: String,status:String,isLogged: Boolean, done: (Boolean,Any?) -> Unit): Response<Responses>?
+    suspend fun logout(username: String, phone: String,status:String,isLogged: Boolean,callback: (Any?) -> Unit): Response<Workflow>?
     fun sendVerificationCode(activity: Activity,
                              phone: String,
                              phoneAuthCallback: PhoneAuthProvider.OnVerificationStateChangedCallbacks

@@ -28,20 +28,22 @@ class SeeForMeRepo  @Inject constructor(
     override suspend fun login(
         username: String,
         phone: String,
+        status:String,
         isLogged: Boolean,
-        callback: (Any?) -> Unit
+        done: (Boolean,Any?) -> Unit
     ): Response<Responses>? {
-        firebaseClient.login(username, phone,isLogged, callback)
+        firebaseClient.login(username, phone,status,isLogged, done)
         return null
     }
 
     override suspend fun logout(
         username: String,
         phone: String,
+        status:String,
         isLogged: Boolean,
         callback: (Any?) -> Unit
     ): Response<Workflow>? {
-        firebaseClient.logout(username, phone, callback)
+        firebaseClient.logout(username, phone,status,isLogged, callback)
         return null
     }
 
