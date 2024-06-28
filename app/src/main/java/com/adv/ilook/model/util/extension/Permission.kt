@@ -21,6 +21,7 @@ const val REQUEST_CODE_BACKGROUND_LOCATION = 105
 const val REQUEST_CODE_ALL = 106
 const val REQUEST_CODE_NOTIFICATION = 107
 const val REQUEST_CODE_SCREEN_CAPTURE = 108
+const val REQUEST_CODE_SMS = 109
 
 private const val TAG = "==>>Permission"
 fun AppCompatActivity.hasPermission(
@@ -94,8 +95,8 @@ fun AppCompatActivity.requestNotificationPermission(
         permissionManifest.add(POST_NOTIFICATIONS)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             permissionManifest.add(FOREGROUND_SERVICE_MEDIA_PROJECTION)
-          /*  permissionManifest.add("android.permission.PROJECT_MEDIA")
-            permissionManifest.add("android.permission.CAPTURE_VIDEO_OUTPUT")*/
+            /*  permissionManifest.add("android.permission.PROJECT_MEDIA")
+              permissionManifest.add("android.permission.CAPTURE_VIDEO_OUTPUT")*/
         }
     }
 
@@ -177,7 +178,7 @@ fun AppCompatActivity.requestBackgroundLocationPermission(
         permissionManifest.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
             permissionManifest.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
-        hasPermission(activity,permissionManifest) {
+        hasPermission(activity, permissionManifest) {
             if (!it) {
                 ActivityCompat.requestPermissions(
                     activity,
@@ -193,12 +194,31 @@ fun AppCompatActivity.requestBackgroundLocationPermission(
     }
 }
 
+fun AppCompatActivity.requestSMSPermission(
+    activity: Activity, success: (result: Boolean) -> Unit
+) {
+    val permissionManifest =
+        mutableListOf(READ_SMS, RECEIVE_SMS)
+    hasPermission(activity, permissionManifest) {
+        if (!it) {
+            ActivityCompat.requestPermissions(
+                activity,
+                permissionManifest.toTypedArray(),
+                REQUEST_CODE_SMS
+            )
+            success(false)
+        } else {
+            success(true)
+        }
+    }
+
+
+}
+
 fun AppCompatActivity.requestAllPermission(
     activity: Activity, success: (result: Boolean) -> Unit
 ) {
-    var permissionManifest: MutableList<String> = mutableListOf<String>()
-
-
+    val permissionManifest: MutableList<String> = mutableListOf<String>()
     permissionManifest.add(CAMERA)
     permissionManifest.add(RECORD_AUDIO)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

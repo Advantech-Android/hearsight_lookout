@@ -14,6 +14,7 @@ import com.adv.ilook.model.db.remote.repository.service.MainService
 import com.adv.ilook.model.util.assets.IPref
 import com.adv.ilook.model.util.assets.PrefImpl
 import com.adv.ilook.view.base.BasicFunction
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
@@ -90,6 +91,9 @@ object AppModule {
     @Singleton
     @Provides
     fun provideFireDatabaseInstance(): FirebaseDatabase = FirebaseDatabase.getInstance()
+    @Singleton
+    @Provides
+    fun provideFireAuthInstance(): FirebaseAuth = FirebaseAuth.getInstance()
 
     @Singleton
     @Provides
@@ -102,9 +106,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseClientImpl(db: DatabaseReference):
+    fun provideFirebaseClientImpl(db: DatabaseReference,auth: FirebaseAuth):
 
-            /*FireRealTimeDB is Base ABS class class*/FirebaseClient = FirebaseClient(db)
+            /*FireRealTimeDB is Base ABS class class*/FirebaseClient = FirebaseClient(db,auth)
     @Qualifier
     @Retention(AnnotationRetention.RUNTIME)
     annotation class LocalDataSource

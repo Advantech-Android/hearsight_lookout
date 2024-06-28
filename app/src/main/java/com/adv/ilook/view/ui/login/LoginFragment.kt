@@ -1,6 +1,7 @@
 package com.adv.ilook.view.ui.login
 
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,8 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
@@ -17,6 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.adv.ilook.R
 import com.adv.ilook.databinding.FragmentLoginBinding
+import com.adv.ilook.model.util.assets.BundleKeys.LOGIN_OTP_KEY
 import com.adv.ilook.model.util.assets.BundleKeys.USER_NAME_KEY
 import com.adv.ilook.model.util.assets.BundleKeys.USER_PHONE_KEY
 import com.adv.ilook.model.util.extension.afterTextChanged
@@ -25,6 +29,7 @@ import com.adv.ilook.model.util.responsehelper.UiStatusLogin
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.base.BaseViewModel
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.PhoneAuthCredential
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +49,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
     override var previousScreenId by Delegates.notNull<Int>()
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentLoginBinding
         get() = FragmentLoginBinding::inflate
+
+
+    var codeSend by Delegates.notNull<Boolean>()
+    var verificationCompleted by Delegates.notNull<PhoneAuthCredential>()
+    var verificationFailed by Delegates.notNull<String>()
+    var isAuthenticated by Delegates.notNull<Boolean>()
+
+
     // Create an OnBackPressedCallback to handle the back button event
     private val onBackPress = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -64,6 +77,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             }
         }
     }
+
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup: ")
         _viewBinding = binding
@@ -78,8 +92,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 liveDataObserver(lifecycleOwner)
             }
         }
+        // Check for SMS read permissions
 
     }
+
     private fun liveDataObserver(lifecycleOwner: LifecycleOwner) {
         binding.apply {
 
@@ -128,13 +144,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     }
 
                     Status.SUCCESS -> {
-                        nav(nextScreenId_1,Bundle().apply {
-                            val userName=usernameText.text.toString().trim()
-                            val userPhone=phoneText.text.toString().trim()
-                            putString(USER_NAME_KEY,userName)
-                            putString(USER_PHONE_KEY,userPhone)
-                        })
-                        updateUiWithUser(loginResult.data as String)
+
+                        Log.d(TAG, "liveDataObserver: Success")
                     }
                 }
 
@@ -171,8 +182,70 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             viewModel.nextScreenLiveData.observe(lifecycleOwner) {
                 nextScreenId_1 = it
             }
-        }
 
+            viewModel.codeSent.observe(lifecycleOwner) {
+                codeSend = it
+                Log.d(TAG, "liveDataObserver: ${it}")
+                nav(nextScreenId_1, Bundle().apply {
+                    val userName = usernameText.text.toString().trim()
+                    val userPhone = phoneText.text.toString().trim()
+                    putString(USER_NAME_KEY, userName)
+                    putString(USER_PHONE_KEY, userPhone)
+                    putString(LOGIN_OTP_KEY, null)
+                })
+                Toast.makeText(requireActivity(), "OTP sent successfully", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            viewModel.verificationCompleted.observe(lifecycleOwner) {
+                verificationCompleted = it
+                val code = verificationCompleted.smsCode
+                Log.d(TAG, "liveDataObserver:Otp verification completed -> ${code}")
+//                phoneText.setText(code.toString())
+
+                if (code != null) {
+                    nav(nextScreenId_1, Bundle().apply {
+                        val userName = usernameText.text.toString().trim()
+                        val userPhone = phoneText.text.toString().trim()
+                        putString(USER_NAME_KEY, userName)
+                        putString(USER_PHONE_KEY, userPhone)
+                        putString(LOGIN_OTP_KEY, code)
+                    })
+                }
+            }
+
+            viewModel.verificationFailed.observe(lifecycleOwner) {
+                verificationFailed = it
+                Log.d(TAG, "liveDataObserver: ${verificationFailed}")
+                updateUiWithUser(it)
+            }
+
+            viewModel.signInResult.observe(lifecycleOwner) {
+                isAuthenticated = it
+                Log.d(TAG, "liveDataObserver: isAuthenticated -> ${isAuthenticated}")
+
+            }
+        }
+        requestSMSPermissions()
+
+    }
+
+    private fun requestSMSPermissions() {
+        if (ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.RECEIVE_SMS
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.READ_SMS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS),
+                1
+            )
+        }
     }
 
     private fun uiReactiveAction() {
@@ -189,9 +262,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         phoneText.text.toString()
                     )
                 }
-                afterTextChanged { str->
+                afterTextChanged { str ->
                     Log.d(TAG, "uiReactiveAction: $str")
-                    
+
                     viewModel.loginDataChange(
                         usernameText.text.toString(),
                         phoneText.text.toString()
@@ -202,7 +275,8 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 doOnTextChanged { text, start, before, count ->
                     Log.d(
                         TAG,
-                        "uiReactiveAction() called with: phoneText => text = $text, start = $start, before = $before, count = $count")
+                        "uiReactiveAction() called with: phoneText => text = $text, start = $start, before = $before, count = $count"
+                    )
                     viewModel.loginDataChange(
                         usernameText.text.toString(),
                         phoneText.text.toString()
@@ -217,16 +291,28 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 setOnEditorActionListener { _, actionId, _ ->
                     when (actionId) {
                         EditorInfo.IME_ACTION_DONE ->
-                        lifecycleScope.launch(Dispatchers.IO) {
-                            viewModel.loginDataChange(
-                                usernameText.text.toString(),
-                                phoneText.text.toString()
-                            )
-                            viewModel.login(
-                                usernameText.text.toString(),
-                                phoneText.text.toString()
-                            )
-                        }
+                            activityListener.onRequestPermissionListener(
+                                binding,
+                                arrayListOf(
+                                    Manifest.permission.RECORD_AUDIO,
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.READ_SMS,
+                                    Manifest.permission.RECEIVE_SMS
+                                )
+                            ) {
+                                lifecycleScope.launch(Dispatchers.IO) {
+
+                                    viewModel.loginDataChange(
+                                        usernameText.text.toString(),
+                                        phoneText.text.toString()
+                                    )
+                                    viewModel.login(
+                                        requireActivity(),
+                                        usernameText.text.toString(),
+                                        phoneText.text.toString()
+                                    )
+                                }
+                            }
                     }
                     false
                 }
@@ -235,9 +321,14 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
             generateOtpButton.setOnClickListener {
                 activityListener.onRequestPermissionListener(
                     binding,
-                    arrayListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA)
+                    arrayListOf(
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.READ_SMS,
+                        Manifest.permission.RECEIVE_SMS
+                    )
                 ) {
-                    val userName=usernameText.text.toString().trim()
+                    val userName = usernameText.text.toString().trim()
                     val phone = phoneText.text.toString().trim()
                     viewModel.loginDataChange(
                         userName,
@@ -245,7 +336,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     )
                     loadingImage.visibility = View.VISIBLE
                     viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        viewModel.login(userName, phone)
+                        viewModel.login(requireActivity(), userName, phone)
                     }
 
                 }

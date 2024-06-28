@@ -36,10 +36,12 @@ import com.adv.ilook.model.util.extension.REQUEST_CODE_CAMERA_MICROPHONE
 import com.adv.ilook.model.util.extension.REQUEST_CODE_LOCATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_NOTIFICATION
 import com.adv.ilook.model.util.extension.REQUEST_CODE_SCREEN_CAPTURE
+import com.adv.ilook.model.util.extension.REQUEST_CODE_SMS
 import com.adv.ilook.model.util.extension.REQUEST_CODE_USB
 import com.adv.ilook.model.util.extension.requestBackgroundLocationPermission
 import com.adv.ilook.model.util.extension.requestCameraMicrophonePermission
 import com.adv.ilook.model.util.extension.requestNotificationPermission
+import com.adv.ilook.model.util.extension.requestSMSPermission
 import com.adv.ilook.model.util.extension.requestUsbPermission
 
 import com.adv.ilook.model.util.responsehelper.UiStatusLogin
@@ -220,6 +222,20 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
 
                                         TAG,
                                         "onRequestPermissionListener:Location permission denied, manually requested"
+                                    )
+                                    success(false)
+                                }
+                            }
+                        }
+                        Manifest.permission.READ_SMS,Manifest.permission.RECEIVE_SMS ->{
+                            requestSMSPermission(this){result ->
+                                if (result) {
+                                    success(true)
+                                } else {
+                                    Log.d(
+
+                                        TAG,
+                                        "onRequestPermissionListener:SMS permission denied, manually requested"
                                     )
                                     success(false)
                                 }
@@ -455,6 +471,16 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), PermissionL
                 } else {
                     Log.d(TAG, "onRequestPermissionsResult: REQUEST_CODE_NOTIFICATION ==> All permission denied")
                     sharedModel.actionLiveData.postValue("REQUEST_CODE_NOTIFICATION-FALSE")
+                }
+            }
+
+            REQUEST_CODE_SMS -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d(TAG, "onRequestPermissionsResult: REQUEST_CODE_SMS ==> All permission granted")
+                    sharedModel.actionLiveData.postValue("REQUEST_CODE_SMS-TRUE")
+                } else {
+                    Log.d(TAG, "onRequestPermissionsResult: REQUEST_CODE_SMS ==> All permission denied")
+                    sharedModel.actionLiveData.postValue("REQUEST_CODE_SMS-FALSE")
                 }
             }
         }

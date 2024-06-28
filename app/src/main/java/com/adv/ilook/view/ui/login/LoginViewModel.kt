@@ -1,15 +1,19 @@
 package com.adv.ilook.view.ui.login
 
 
+import android.Manifest
 import android.app.Activity
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import android.util.Patterns
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewModelScope
 import com.adv.ilook.R
 import com.adv.ilook.model.data.workflow.LoginScreen
 import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
+import com.adv.ilook.model.db.remote.repository.apprepo.SeeForMeRepo
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.model.util.responsehelper.Resource
 
@@ -19,6 +23,10 @@ import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.BasicFunction
 
 import com.adv.ilook.view.ui.splash.TypeOfData
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -30,6 +38,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -37,9 +46,11 @@ private const val TAG = "==>>LoginViewModel"
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: CommonRepository,
+    private val loginRepository: SeeForMeRepo,
     private val networkHelper: NetworkHelper
 ) : BaseViewModel(networkHelper) {
+    private lateinit var addPhoneCountry: String
+
     // private lateinit var loginScreen: LoginScreen
     private var loginScreen by Delegates.notNull<LoginScreen>()
     private val _nextScreenLiveData = MutableLiveData<Int>()
@@ -80,7 +91,7 @@ class LoginViewModel @Inject constructor(
                         //  withContext(Dispatchers.IO) {
                         val result = loginRepository.login(username, phone) {
 
-                             //   emit(Resource.success(it))
+                            //   emit(Resource.success(it))
 
                         }
                         emit(Resource.success("login success"))
@@ -121,56 +132,107 @@ class LoginViewModel @Inject constructor(
                 }
                 .collect { resource ->
                     Log.d(TAG, "collect $resource")
-                  runBlocking {  _loginResult.postValue(resource) }
+                    runBlocking { _loginResult.postValue(resource) }
 
                 }
         }
     }
 
-    suspend fun login(username: String, phone: String) {
-      //  loginFlow(username, phone)
+    suspend fun login(activity: Activity,username: String, phone: String) {
+        //  loginFlow(username, phone)
 
         runBlocking {
-                  withContext(Dispatchers.Main) {
+            withContext(Dispatchers.Main) {
 
-                  _loginResult.postValue(Resource.loading(true))
-              }
-              //  delay(1000)
-              if (networkHelper.isNetworkConnected()) {
-                  if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
+                _loginResult.postValue(Resource.loading(data=true))
+            }
+            //  delay(1000)
+            if (networkHelper.isNetworkConnected()) {
+                if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
 
-                      try {
-                          withContext(Dispatchers.IO) {
-                              val result = loginRepository.login(username, phone) {
-                                  _loginResult.postValue(Resource.success(it))
-                              }
-                          }
+                    try {
+                        withContext(Dispatchers.IO) {
+                       /*     val result = loginRepository.login(username, addPhoneCountry) {
+                                _loginResult.postValue(Resource.success(it))
+                            }*/
+                            sendVerificationCode(activity,addPhoneCountry)
+                        }
 
-                      } catch (e: Exception) {
-                          withContext(Dispatchers.Main) {
-                              _loginResult.postValue(Resource.loading(false))
-                              _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
-                          }
-                      }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            _loginResult.postValue(Resource.loading(data=false))
+                            _loginResult.postValue(
+                                Resource.error(
+                                    msg = R.string.login_failed,
+                                    null
+                                )
+                            )
+                        }
+                    }
 
-                  } else {
-                      withContext(Dispatchers.Main) {
-                          _loginResult.postValue(Resource.loading(false))
-                      }
-                      withContext(Dispatchers.Main) {
-                          _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
-                      }
-                  }
-              } else {
-                  withContext(Dispatchers.Main) {
-                      _loginResult.postValue(Resource.loading(false))
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _loginResult.postValue(Resource.loading(data=false))
+                    }
+                    withContext(Dispatchers.Main) {
+                        _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+                    }
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    _loginResult.postValue(Resource.loading(false))
+                    _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
+                }
+            }
+        }
 
-                      _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
-                  }
-              }
+    }
+
+    fun sendVerificationCode(activity:Activity,phone: String) {
+        loginRepository.sendVerificationCode(activity,phone, object : PhoneAuthProvider
+            .OnVerificationStateChangedCallbacks() {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+              _verificationCompleted.value = credential
+            }
+
+
+            override fun onVerificationFailed(e: FirebaseException) {
+                _verificationFailed.value = e.message
+                _loginResult.postValue(Resource.loading(data=false))
+            }
+
+            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                Log.d(
+                    TAG,
+                    "onCodeSent() called with: verificationId = $verificationId, token = $token"
+                )
+
+               loginRepository.setVerificationIdAndToken(verificationId, token)
+                _loginResult.postValue(Resource.loading(data=false))
+                _codeSent.value = true
+            }
+        })
+    }
+
+    fun verifyCode(code: String) {
+        try {
+            val credential = loginRepository.verifyCode(code)
+            signInWithCredential(credential)
+        } catch (e: Exception) {
+            _verificationFailed.value = e.message
         }
     }
 
+    private fun signInWithCredential(credential: PhoneAuthCredential) {
+        loginRepository.signInWithCredential(credential) { user, exception ->
+            if (user != null) {
+                _signInResult.value = true
+            } else {
+                _signInResult.value = false
+                exception?.message?.let { _verificationFailed.value = it }
+            }
+        }
+    }
 
     fun loginDataChange(username: String, phone: String) {
         if (!isUserNameValid(username)) {
@@ -178,7 +240,7 @@ class LoginViewModel @Inject constructor(
         } else if (!isPhoneNumberValid(phone)) {
             _loginForm.postValue(UiStatusLogin.LoginFormState(phoneError = validation_phone_error.value))
         } else {
-            _loginForm.postValue(UiStatusLogin.LoginFormState(message =validation_message.value))
+            _loginForm.postValue(UiStatusLogin.LoginFormState(message = validation_message.value))
             _loginForm.postValue(UiStatusLogin.LoginFormState(isDataValid = true))
         }
     }
@@ -187,8 +249,8 @@ class LoginViewModel @Inject constructor(
         if (phone.length != 10) {
             return false
         } else {
-            var phoneTemp = "+91$phone"
-            return Patterns.PHONE.matcher(phoneTemp).matches()
+             addPhoneCountry = "+91$phone"
+            return Patterns.PHONE.matcher(addPhoneCountry).matches()
         }
     }
 
@@ -206,6 +268,18 @@ class LoginViewModel @Inject constructor(
 
     private val _loginResult = MutableLiveData<Resource<Any>>()
     val loginResult: LiveData<Resource<Any>> = _loginResult
+
+    private val _codeSent = MutableLiveData<Boolean>()
+    val codeSent: LiveData<Boolean> = _codeSent
+
+    private val _verificationCompleted = MutableLiveData<PhoneAuthCredential>()
+    val verificationCompleted: LiveData<PhoneAuthCredential> = _verificationCompleted
+
+    private val _verificationFailed = MutableLiveData<String>()
+    val verificationFailed: LiveData<String> = _verificationFailed
+
+    private val _signInResult = MutableLiveData<Boolean>()
+    val signInResult: LiveData<Boolean> = _signInResult
 
     val username = MutableLiveData<String>()
 

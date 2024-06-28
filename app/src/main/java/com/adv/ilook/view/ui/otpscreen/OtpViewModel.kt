@@ -5,6 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.adv.ilook.model.data.workflow.OtpScreen
 import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
+import com.adv.ilook.model.db.remote.repository.apprepo.SeeForMeRepo
+import com.adv.ilook.model.util.assets.PrefImpl
+import com.adv.ilook.model.util.assets.SharedPrefKey.APP_USERLOGIN
+import com.adv.ilook.model.util.assets.SharedPrefKey.APP_USERNAME
+import com.adv.ilook.model.util.assets.SharedPrefKey.APP_USERPHONE
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.model.util.responsehelper.Resource
 import com.adv.ilook.model.util.responsehelper.UiStatusLogin
@@ -12,6 +17,7 @@ import com.adv.ilook.model.util.responsehelper.UiStatusOtp
 import com.adv.ilook.view.base.BaseViewModel
 import com.adv.ilook.view.base.BasicFunction
 import com.adv.ilook.view.ui.splash.TypeOfData
+import com.google.firebase.auth.PhoneAuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,11 +26,13 @@ import javax.inject.Inject
 import kotlin.properties.Delegates
 
 private const val TAG = "==>>OtpViewModel"
+
 @HiltViewModel
-class OtpViewModel  @Inject constructor(
-    private val loginRepository: CommonRepository,
+class OtpViewModel @Inject constructor(
+    private val loginRepository: SeeForMeRepo,
     private val networkHelper: NetworkHelper
 ) : BaseViewModel(networkHelper) {
+    @Inject lateinit var sharedPreference: PrefImpl
     private var otpScreen by Delegates.notNull<OtpScreen>()
     private val _nextScreenLiveData = MutableLiveData<Int>()
     var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
@@ -36,15 +44,15 @@ class OtpViewModel  @Inject constructor(
                 otpScreen = it.screens?.otpScreen!!
                 Log.d(TAG, "init: prev ->${otpScreen.previousScreen.toString()}")
                 Log.d(TAG, "init: next ->${otpScreen.nextScreen.toString()}")
-                launch(Dispatchers.Main){
+                launch(Dispatchers.Main) {
                     _nextScreenLiveData.postValue(BasicFunction.getScreens()[otpScreen.nextScreen.toString()] as Int)
-                    _prevScreenLiveData.postValue( BasicFunction.getScreens()[otpScreen.previousScreen.toString()] as Int)
+                    _prevScreenLiveData.postValue(BasicFunction.getScreens()[otpScreen.previousScreen.toString()] as Int)
                 }
 
                 function(TypeOfData.INT)
             }
 
-            launch (Dispatchers.Main){
+            launch(Dispatchers.Main) {
                 _tv_otp_header.postValue(otpScreen.views?.textView?.header?.text!!)
                 _tv_otp_helper_text.postValue(otpScreen.views?.textView?.header?.helperText!!)
                 _et_otp_number_text.postValue(otpScreen.views?.textView?.otpCode?.text!!)
@@ -58,6 +66,48 @@ class OtpViewModel  @Inject constructor(
         }
     }
 
+    fun verifyCode(code: String) {
+        try {
+            val credential = loginRepository.verifyCode(code)
+            signInWithCredential(credential)
+        } catch (e: Exception) {
+            _verificationFailed.value = e.message
+        }
+    }
+
+    private fun signInWithCredential(credential: PhoneAuthCredential) {
+        loginRepository.signInWithCredential(credential) { user, exception ->
+            if (user != null) {
+                _signInResult.value = true
+            } else {
+                _signInResult.value = false
+                exception?.message?.let { _verificationFailed.value = it }
+            }
+        }
+    }
+
+    suspend fun saveUserData(userName: String, userPhone: String) {
+        withContext(Dispatchers.IO) {
+         sharedPreference.put(APP_USERNAME,userName)
+         sharedPreference.put(APP_USERPHONE,userPhone)
+         sharedPreference.put(APP_USERLOGIN,true)
+        }
+        withContext(Dispatchers.IO) {
+            loginRepository.login(userName,userPhone,true){
+
+            }
+        }
+    }
+
+    //OTP Login
+    private val _verificationCompleted = MutableLiveData<PhoneAuthCredential>()
+    val verificationCompleted: LiveData<PhoneAuthCredential> = _verificationCompleted
+
+    private val _verificationFailed = MutableLiveData<String>()
+    val verificationFailed: LiveData<String> = _verificationFailed
+
+    private val _signInResult = MutableLiveData<Boolean>()
+    val signInResult: LiveData<Boolean> = _signInResult
 
     private val _otpForm = MutableLiveData<UiStatusOtp>()
     val otpForm: LiveData<UiStatusOtp> = _otpForm

@@ -24,4 +24,13 @@ object BundleKeys {
 
     const val USER_NAME_KEY:String = "USER_NAME_KEY"
     const val USER_PHONE_KEY:String = "USER_PHONE_KEY"
+    const val LOGIN_OTP_KEY:String = "LOGIN_OTP_KEY"
+}
+
+object FirebaseKeys {
+    const val user_name:String = "user_name"
+    const val status:String = "status"
+}
+enum class UserStatus {
+ ONLINE,OFFLINE,UNREGISTER,IN_CALL
 }

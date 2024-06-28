@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
@@ -13,13 +14,16 @@ import com.adv.ilook.R
 import com.adv.ilook.databinding.FragmentLoginBinding
 import com.adv.ilook.databinding.FragmentOtpBinding
 import com.adv.ilook.databinding.FragmentSplashBinding
+import com.adv.ilook.model.util.assets.BundleKeys.LOGIN_OTP_KEY
 import com.adv.ilook.model.util.assets.BundleKeys.USER_NAME_KEY
 import com.adv.ilook.model.util.assets.BundleKeys.USER_PHONE_KEY
+import com.adv.ilook.model.util.extension.afterTextChanged
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.base.BaseViewModel
 
 
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
@@ -43,6 +47,7 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
     override var previousScreenId by Delegates.notNull<Int>()
     var isSimValidationEnabled by Delegates.notNull<Boolean>()
     var isOtpEnabled by Delegates.notNull<Boolean>()
+    var isAuthenticated by Delegates.notNull<Boolean>()
     private val onBackPress = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             isEnabled = true
@@ -62,20 +67,23 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
             }
         }
     }
-
+    var userName: String? = null
+    var userPhone: String? = null
+    var loginOtp: String? = null
     override fun setup(savedInstanceState: Bundle?) {
         Log.d(TAG, "setup:")
         arguments?.apply {
-            val userName = getString(USER_NAME_KEY)
-            val userPhone = getString(USER_PHONE_KEY)
-            Log.d(TAG, "setup: ${userName},${userPhone}")
+            userName = getString(USER_NAME_KEY)
+            userPhone = getString(USER_PHONE_KEY)
+            loginOtp = getString(LOGIN_OTP_KEY)
+            Log.d(TAG, "setup: ${userName},${userPhone},${loginOtp}")
         }
         _viewBinding = binding
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.init { }
         }
         uiReactiveAction()
-       // liveDataObserver()
+        // liveDataObserver()
         viewLifecycleOwnerLiveData.observe(this) { lifecycleOwner ->
             viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
                 liveDataObserver(lifecycleOwner)
@@ -99,6 +107,7 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
                 isOtpEnabled = it
                 loginButton.isEnabled = it
             }
+
             viewModel.bt_login_text.observe(lifecycleOwner) {
                 loginButton.text = it
             }
@@ -124,11 +133,48 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
                 }
 
             }
+
+            viewModel.signInResult.observe(lifecycleOwner) {
+                isAuthenticated = it
+                Log.d(TAG, "liveDataObserver: isAuthenticated -> ${isAuthenticated}")
+                if (isAuthenticated) {
+                  CoroutineScope(Dispatchers.Main).launch{
+                      viewModel.saveUserData(userName!!, userPhone!!)
+
+                  }
+                    nav(nextScreenId_1)
+                }else{
+                    nav(previousScreenId)
+                }
+
+            }
         }
     }
 
     private fun uiReactiveAction() {
+        binding.apply {
+            if (loginOtp != null) {
+                otpInputTIEditText.setText(loginOtp.toString())
+            } else loginOtp = ""
+            otpInputTIEditText.apply {
+                doOnTextChanged { text, start, before, count ->
+                    Log.d(
+                       TAG,
+                        "uiReactiveAction() called with: usernameText => text = $text, start = $start, before = $before, count = $count"
+                    )
 
+                }
+                afterTextChanged { str ->
+                    loginOtp=str.toString()
+                }
+            }
+            loginButton.setOnClickListener {
+                Toast.makeText(requireActivity(), "OTP sent successfully", Toast.LENGTH_SHORT).show()
+                loginOtp=otpInputTIEditText.text.toString().trim()
+                if (!(loginOtp.isNullOrEmpty()))
+                    viewModel.verifyCode(loginOtp!!)
+            }
+        }
     }
 
 
