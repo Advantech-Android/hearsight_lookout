@@ -130,6 +130,8 @@ dependencies {
     implementation libs.firebase.firestore.ktx
     implementation libs.firebase.storage.ktx
     implementation libs.firebase.ui.storage
+    implementation libs.firebase.auth.ktx
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.1.0'
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
