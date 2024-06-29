@@ -83,16 +83,27 @@ class FirebaseClient @Inject constructor(
                                           val dbChild = databaseReference.child(phoneNumber)
                                           dbChild.child(user_name).setValue(username)
                                           dbChild.child(FirebaseKeys.status).setValue(status)
-                                          dbChild.child(login_status).setValue(isLogged)
+                                          dbChild.child(login_status).setValue(isLogged).addOnSuccessListener {
+                                              rigisteredPhoneNumber = phoneNumber
+                                              rigisteredUserName = username
+                                              Log.d(TAG, "onDataChange: saved successfully")
+                                              done(true, "saved successfully")
+                                              continuation.resume(true)
+                                          }
                                               .addOnCompleteListener {
                                                   rigisteredPhoneNumber = phoneNumber
                                                   rigisteredUserName = username
-                                                  done(true, "saved successfully")
+                                                  Log.d(TAG, "onDataChange: saved successfully")
+                                                 // done(true, "saved successfully")
+                                                  continuation.resume(true)
                                               }.addOnFailureListener {
+                                                  Log.d(TAG, "onDataChange: addOnFailureListener")
                                                   done(false, it.message)
                                                   continuation.resumeWithException(Exception(it.message))
                                               }
+
                                       }else{
+                                          Log.d(TAG, "onDataChange: Device is not purchased")
                                           done(false,"Device is not purchased")
                                           continuation.resumeWithException(Exception("Device is not purchased"))
                                       }

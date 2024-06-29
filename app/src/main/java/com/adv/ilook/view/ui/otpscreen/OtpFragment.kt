@@ -151,6 +151,7 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
             viewModel.otpResult.observe(lifecycleOwner) {otpResult->
                 when(otpResult.status){
                     Status.LOADING->{
+                        Log.d(TAG, "liveDataObserver: LOADING ->${otpResult.is_loading}:${otpResult.user_message}")
                         if (otpResult.is_loading) {
                             innerContainer.alpha = 0.5f
                             innerContainer.isEnabled = false
@@ -165,10 +166,12 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
                     }
 
                     Status.SUCCESS->{
+                        Log.d(TAG, "liveDataObserver: SUCCESS")
                         nav(nextScreenId_1)
                     }
 
                     Status.ERROR->{
+                        Log.d(TAG, "liveDataObserver: ERROR")
                         loginButton.showSnackbar(this.loginButton,
                             otpResult.user_message.toString(),1,"Retry",{ action1->
                                 Log.d(TAG, "liveDataObserver: Action 1 ")

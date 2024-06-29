@@ -93,18 +93,34 @@ class OtpViewModel @Inject constructor(
          sharedPreference.put(APP_USERLOGIN,true)
         }
         withContext(Dispatchers.IO) {
+          //  launch(Dispatchers.IO) {
             loginRepository.login(userName,userPhone,UserStatus.ONLINE.name,true){ isDone,message->
                 launch(Dispatchers.Main) {
-                    if (isDone){
+                    if (isDone) {
                         _otpResult.postValue(Resource.success(message.toString()))
                         _toast_success_message.postValue(message.toString())
-                        _otpResult.postValue(Resource.loading(isLoading=false, data = "Registered successfully"))
-                    }
-                  else{
-                        _otpResult.postValue(Resource.error(custom_message = "Registration failed", data = message.toString()))
+                        _otpResult.postValue(
+                            Resource.loading(
+                                isLoading = false,
+                                data = "Registered successfully"
+                            )
+                        )
+                    } else {
+                        _otpResult.postValue(
+                            Resource.error(
+                                custom_message = "Registration failed",
+                                data = message.toString()
+                            )
+                        )
                         _toast_failure_message.postValue(message.toString())
-                        _otpResult.postValue(Resource.loading(isLoading=false, data = "Registration failed"))
+                        _otpResult.postValue(
+                            Resource.loading(
+                                isLoading = false,
+                                data = "Registration failed"
+                            )
+                        )
                     }
+               // }
                 }
             }
         }
