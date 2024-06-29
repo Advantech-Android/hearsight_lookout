@@ -139,7 +139,6 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
                 if (isAuthenticated) {
                   CoroutineScope(Dispatchers.Main).launch{
                       viewModel.saveUserData(userName!!, userPhone!!)
-
                   }
                     nav(nextScreenId_1)
                 }else{

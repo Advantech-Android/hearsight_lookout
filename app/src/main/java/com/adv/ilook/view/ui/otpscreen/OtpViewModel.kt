@@ -6,10 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import com.adv.ilook.model.data.workflow.OtpScreen
 import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.db.remote.repository.apprepo.SeeForMeRepo
+import com.adv.ilook.model.util.assets.FirebaseKeys
 import com.adv.ilook.model.util.assets.PrefImpl
 import com.adv.ilook.model.util.assets.SharedPrefKey.APP_USERLOGIN
 import com.adv.ilook.model.util.assets.SharedPrefKey.APP_USERNAME
 import com.adv.ilook.model.util.assets.SharedPrefKey.APP_USERPHONE
+import com.adv.ilook.model.util.assets.UserStatus
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.model.util.responsehelper.Resource
 import com.adv.ilook.model.util.responsehelper.UiStatusLogin
@@ -93,7 +95,7 @@ class OtpViewModel @Inject constructor(
          sharedPreference.put(APP_USERLOGIN,true)
         }
         withContext(Dispatchers.IO) {
-            loginRepository.login(userName,userPhone,true){ isDone,message->
+            loginRepository.login(userName,userPhone,UserStatus.ONLINE.name,true){ isDone,message->
 
             }
         }

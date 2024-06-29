@@ -33,7 +33,7 @@ object FirebaseKeys {
     const val call_event:String = "call_event"
     const val contacts:String = "contacts"
     const val latest_event:String = "latest_event"
-    const val login_status:String = "latest_event"
+    const val login_status:String = "login_status"
     const val workflow:String = "workflow"
 }
 enum class UserStatus {

@@ -44,7 +44,8 @@ class FirebaseClient @Inject constructor(
                     if (phoneNumber == dbPhoneNumber) {
                         val dbChild = databaseReference.child(phoneNumber)
                         dbChild.child(user_name).setValue(username)
-                        dbChild.child(login_status).setValue(status)
+                        dbChild.child(FirebaseKeys.status).setValue(status)
+                        dbChild.child(login_status).setValue(isLogged)
                             .addOnCompleteListener {
                                 rigisteredPhoneNumber = phoneNumber
                                 rigisteredUserName = username
@@ -56,22 +57,17 @@ class FirebaseClient @Inject constructor(
                         done(false, "phone number is wrong")
                     }
                 } else {
-                    databaseReference.child(phoneNumber)
-                        .child("user_name").setValue(username)
+                    val dbChild = databaseReference.child(phoneNumber)
+                    dbChild.child(user_name).setValue(username)
+                    dbChild.child(FirebaseKeys.status).setValue(status)
+                    dbChild.child(login_status).setValue(isLogged)
                         .addOnCompleteListener {
-                            databaseReference.child(phoneNumber).child(STATUS).setValue(status)
-                                .addOnCompleteListener {
-                                    databaseReference.child(phoneNumber).child(LOGIN_STATUS).setValue(true)
-
-
-                                    done(true, null)
-                                }.addOnFailureListener {
-                                    done(false, it.message)
-                                }
+                            rigisteredPhoneNumber = phoneNumber
+                            rigisteredUserName = username
+                            done(true, "saved successfully")
                         }.addOnFailureListener {
                             done(false, it.message)
                         }
-
                 }
             }
 
