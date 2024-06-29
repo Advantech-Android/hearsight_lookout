@@ -12,20 +12,21 @@ enum class Status {
 data class Resource<out T>(
     val status: Status,
     val data: T?,
-    val message:Any?
+    val user_message:Any?,
+    val is_loading:Boolean=false
 ){
     companion object{
 
         fun <T> success(data:T?): Resource<T> {
-            return Resource(Status.SUCCESS, data, null)
+            return Resource(Status.SUCCESS, data, user_message=null)
         }
 
-        fun <T> error(msg:Any, data:T?): Resource<T> {
-            return Resource(Status.ERROR, data, msg)
+        fun <T> error(custom_message:Any="", data:T?): Resource<T> {
+            return Resource(Status.ERROR, data, user_message=custom_message)
         }
 
-        fun <T> loading(data:T?): Resource<T> {
-            return Resource(Status.LOADING, data, null)
+        fun <T> loading(isLoading:Boolean=false,data:T?): Resource<T> {
+            return Resource(Status.LOADING, data, user_message=null, is_loading = isLoading)
         }
 
     }

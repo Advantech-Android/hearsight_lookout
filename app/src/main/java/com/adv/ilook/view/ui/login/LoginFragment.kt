@@ -123,7 +123,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 when (loginResult.status) {
                     Status.LOADING -> {
 
-                        if (loginResult.data == false) {
+                        if (!loginResult.is_loading) {
                             loadingImage.visibility = View.GONE
                             innerContainer.alpha = 1f
                             innerContainer.isEnabled = true
@@ -139,7 +139,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
                     Status.ERROR -> {
                         Log.d(TAG, "ERROR----")
-                        showLoginFailed(loginResult.message as Int)
+                        showLoginFailed(loginResult.user_message as Int)
 
                     }
 

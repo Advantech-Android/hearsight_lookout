@@ -1,11 +1,10 @@
 package com.adv.ilook.model.db.remote.repository.apprepo
 
 import android.app.Activity
-import com.adv.ilook.model.data.firebasemodel.Responses
 import com.adv.ilook.model.data.workflow.Workflow
 import com.adv.ilook.model.db.local.source.CommonDataSource
+import com.adv.ilook.model.db.remote.firebase.firestore.FireStoreClient
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FirebaseClient
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
@@ -18,6 +17,7 @@ import javax.inject.Inject
 class SeeForMeRepo  @Inject constructor(
     private val local: CommonDataSource,
     private val firebaseClient: FirebaseClient,
+    private val fireStoreClient: FireStoreClient,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : CommonRepository {
 
@@ -31,9 +31,9 @@ class SeeForMeRepo  @Inject constructor(
         status:String,
         isLogged: Boolean,
         done: (Boolean,Any?) -> Unit
-    ): Response<Responses>? {
-        firebaseClient.login(username, phone,status,isLogged, done)
-        return null
+    ): Boolean {
+
+        return firebaseClient.login(username, phone,status,isLogged, done)
     }
 
     override suspend fun logout(

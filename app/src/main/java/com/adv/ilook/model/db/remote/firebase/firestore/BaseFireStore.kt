@@ -15,7 +15,7 @@ import java.lang.reflect.Type
 import java.util.*
 import java.util.concurrent.*
 
-abstract class FireStoreDatabase(val db: FirebaseFirestore) {
+abstract class BaseFireStore(val db: FirebaseFirestore) {
 
     companion object {
 

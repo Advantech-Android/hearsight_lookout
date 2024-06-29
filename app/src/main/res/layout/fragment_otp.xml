@@ -3,9 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.ui.otpscreen.OtpFragment">
     <!-- ImageView for back arrow -->
+
     <ImageView
         android:id="@+id/img_back_arrow"
         android:layout_width="40dp"
@@ -14,6 +16,18 @@
         android:translationZ="90dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/inner_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.15" >
+
 
     <TextView
         android:id="@+id/header_text"
@@ -88,4 +102,18 @@
         app:layout_constraintStart_toStartOf="@+id/otp_input_TILayout"
         app:layout_constraintTop_toBottomOf="@+id/otp_input_TILayout" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/loading_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:visibility="visible"
+
+        app:layout_constraintVertical_bias="1.08"
+        app:layout_constraintBottom_toBottomOf="@+id/inner_container"
+        app:layout_constraintEnd_toEndOf="@+id/inner_container"
+        app:layout_constraintStart_toStartOf="@+id/inner_container"
+        app:layout_constraintTop_toTopOf="@+id/inner_container"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>

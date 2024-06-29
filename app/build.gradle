@@ -121,7 +121,7 @@ dependencies {
     implementation libs.glide
     implementation libs.lottie
     implementation libs.kotlinx.coroutines.android
-
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     //firebase
     implementation platform(libs.firebase.bom)
     implementation libs.firebase.database.ktx

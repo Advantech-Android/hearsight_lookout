@@ -14,6 +14,8 @@ import com.adv.ilook.R
 import com.adv.ilook.model.data.workflow.LoginScreen
 import com.adv.ilook.model.db.remote.repository.apprepo.CommonRepository
 import com.adv.ilook.model.db.remote.repository.apprepo.SeeForMeRepo
+import com.adv.ilook.model.util.assets.FirebaseKeys
+import com.adv.ilook.model.util.assets.UserStatus
 import com.adv.ilook.model.util.network.NetworkHelper
 import com.adv.ilook.model.util.responsehelper.Resource
 
@@ -89,26 +91,19 @@ class LoginViewModel @Inject constructor(
                 if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
                     try {
                         //  withContext(Dispatchers.IO) {
-                        val result = loginRepository.login(username, phone) {
-
+                        val result = loginRepository.login(username, phone,UserStatus.ONLINE.name, isLogged = true) { isComplete,message->
                             //   emit(Resource.success(it))
-
+                         //  emit(Resource.success("login success"))
                         }
-                        emit(Resource.success("login success"))
-                        // }
                         // emit(Resource.success(result))
                     } catch (e: Exception) {
-
-                        emit(Resource.error(msg = R.string.login_failed, e.message))
-
+                        emit(Resource.error(custom_message = R.string.login_failed, e.message))
                     }
-
-
                 } else {
-                    emit(Resource.error(msg = R.string.login_failed, "name and phone is invalid"))
+                    emit(Resource.error(custom_message = R.string.login_failed, "name and phone is invalid"))
                 }
             } else {
-                emit(Resource.error(msg = R.string.network_error, "network is needed"))
+                emit(Resource.error(custom_message = R.string.network_error, "network is needed"))
             }
 //            emit(Resource.loading(false))
         }.flowOn(Dispatchers.IO)
@@ -119,15 +114,15 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             loginEmit(username, phone).onStart {
                 Log.d(TAG, "onStart")
-                _loginResult.postValue(Resource.loading(true))
+                _loginResult.postValue(Resource.loading(isLoading = true, data = "Please wait..."))
             }
                 .onCompletion {
                     Log.d(TAG, "onCompletion")
-                    _loginResult.postValue(Resource.loading(false))
+                    _loginResult.postValue(Resource.loading(isLoading = false, data = "Completed..."))
                 }
                 .catch { e ->
                     Log.d(TAG, "catch ${e.message}")
-                    _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+                    _loginResult.postValue(Resource.error(custom_message = R.string.login_failed, null))
 
                 }
                 .collect { resource ->
@@ -144,7 +139,7 @@ class LoginViewModel @Inject constructor(
         runBlocking {
             withContext(Dispatchers.Main) {
 
-                _loginResult.postValue(Resource.loading(data=true))
+                _loginResult.postValue(Resource.loading(isLoading = false,"Please wait..."))
             }
             //  delay(1000)
             if (networkHelper.isNetworkConnected()) {
@@ -160,10 +155,10 @@ class LoginViewModel @Inject constructor(
 
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
-                            _loginResult.postValue(Resource.loading(data=false))
+                            _loginResult.postValue(Resource.loading(isLoading = false,"Completed..."))
                             _loginResult.postValue(
                                 Resource.error(
-                                    msg = R.string.login_failed,
+                                    custom_message = R.string.login_failed,
                                     null
                                 )
                             )
@@ -172,16 +167,16 @@ class LoginViewModel @Inject constructor(
 
                 } else {
                     withContext(Dispatchers.Main) {
-                        _loginResult.postValue(Resource.loading(data=false))
+                        _loginResult.postValue(Resource.loading(isLoading = false,"Completed..."))
                     }
                     withContext(Dispatchers.Main) {
-                        _loginResult.postValue(Resource.error(msg = R.string.login_failed, null))
+                        _loginResult.postValue(Resource.error(custom_message = R.string.login_failed, null))
                     }
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    _loginResult.postValue(Resource.loading(false))
-                    _loginResult.postValue(Resource.error(msg = R.string.network_error, null))
+                    _loginResult.postValue(Resource.loading(isLoading = false,"Completed..."))
+                    _loginResult.postValue(Resource.error(custom_message = R.string.network_error, null))
                 }
             }
         }

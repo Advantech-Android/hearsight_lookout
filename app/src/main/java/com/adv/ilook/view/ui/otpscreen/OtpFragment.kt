@@ -3,6 +3,7 @@ package com.adv.ilook.view.ui.otpscreen
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -11,15 +12,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.adv.ilook.R
-import com.adv.ilook.databinding.FragmentLoginBinding
 import com.adv.ilook.databinding.FragmentOtpBinding
-import com.adv.ilook.databinding.FragmentSplashBinding
 import com.adv.ilook.model.util.assets.BundleKeys.LOGIN_OTP_KEY
 import com.adv.ilook.model.util.assets.BundleKeys.USER_NAME_KEY
 import com.adv.ilook.model.util.assets.BundleKeys.USER_PHONE_KEY
 import com.adv.ilook.model.util.extension.afterTextChanged
+import com.adv.ilook.model.util.responsehelper.Status
 import com.adv.ilook.view.base.BaseFragment
 import com.adv.ilook.view.base.BaseViewModel
+import com.bumptech.glide.Glide
 
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -138,13 +139,45 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
                 Log.d(TAG, "liveDataObserver: isAuthenticated -> ${isAuthenticated}")
                 if (isAuthenticated) {
                   CoroutineScope(Dispatchers.Main).launch{
-                      viewModel.saveUserData(userName!!, userPhone!!)
+                      viewModel.registeredUserData(userName!!, userPhone!!)
                   }
-                    nav(nextScreenId_1)
+
                 }else{
                     nav(previousScreenId)
                 }
 
+            }
+
+            viewModel.otpResult.observe(lifecycleOwner) {otpResult->
+                when(otpResult.status){
+                    Status.LOADING->{
+                        if (otpResult.is_loading) {
+                            innerContainer.alpha = 0.5f
+                            innerContainer.isEnabled = false
+                            loadingImage.visibility = View.VISIBLE
+                            Glide.with(requireActivity()).load(R.drawable.loading)
+                                .into(loadingImage)
+                        } else {
+                            loadingImage.visibility = View.GONE
+                            innerContainer.alpha = 1f
+                            innerContainer.isEnabled = true
+                        }
+                    }
+
+                    Status.SUCCESS->{
+                        nav(nextScreenId_1)
+                    }
+
+                    Status.ERROR->{
+                        loginButton.showSnackbar(this.loginButton,
+                            otpResult.user_message.toString(),1,"Retry",{ action1->
+                                Log.d(TAG, "liveDataObserver: Action 1 ")
+                            }){ action2->
+                            Log.d(TAG, "liveDataObserver: Action 2 ")
+                        }
+                    }
+
+                }
             }
         }
     }

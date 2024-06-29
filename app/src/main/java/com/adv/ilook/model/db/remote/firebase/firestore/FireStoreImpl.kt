@@ -10,7 +10,7 @@ import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 import javax.inject.Inject
 
-class FireStoreImpl @Inject constructor(db: FirebaseFirestore) : FireStoreDatabase(db) {
+class FireStoreImpl @Inject constructor(db: FirebaseFirestore) : BaseFireStore(db) {
     private lateinit var lists: List<HashMap<String, Any?>>
 
     @Inject

@@ -3,7 +3,8 @@ package com.adv.ilook.di
 import android.content.Context
 import com.adv.ilook.model.db.local.source.CommonDataSource
 import com.adv.ilook.model.db.local.source.LocalDataSource
-import com.adv.ilook.model.db.remote.firebase.firestore.FireStoreDatabase
+import com.adv.ilook.model.db.remote.firebase.firestore.BaseFireStore
+import com.adv.ilook.model.db.remote.firebase.firestore.FireStoreClient
 import com.adv.ilook.model.db.remote.firebase.firestore.FireStoreImpl
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.BaseRealTimeDataBase
 import com.adv.ilook.model.db.remote.firebase.realtimedatabase.FirebaseClient
@@ -84,8 +85,13 @@ object AppModule {
     fun provideFireStoreDatabase(): FirebaseFirestore = FirebaseFirestore.getInstance()
     @Singleton
     @Provides
-    fun provideFireStoreImpl(db: FirebaseFirestore): /*FireStoreDatabase is Base ABS class class*/ FireStoreDatabase =
+    fun provideFireStoreImpl(db: FirebaseFirestore): /*FireStoreDatabase is Base ABS class class*/ BaseFireStore =
         FireStoreImpl(db)
+
+    @Singleton
+    @Provides
+    fun provideFireStoreClient(db: FirebaseFirestore,ioDispatcher: CoroutineDispatcher): /*FireStoreDatabase is Base ABS class class*/ BaseFireStore =
+        FireStoreClient(db,ioDispatcher)
 
     // TODO: 05-28-2024 FirebaseRealTimeDB
     @Singleton
@@ -106,9 +112,9 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseClientImpl(db: DatabaseReference,auth: FirebaseAuth):
+    fun provideFirebaseClientImpl(db: DatabaseReference,auth: FirebaseAuth,fireStoreClient:FireStoreClient,ioDispatcher: CoroutineDispatcher):
 
-            /*FireRealTimeDB is Base ABS class class*/FirebaseClient = FirebaseClient(db,auth)
+            /*FireRealTimeDB is Base ABS class class*/FirebaseClient = FirebaseClient(db,auth,fireStoreClient,ioDispatcher)
     @Qualifier
     @Retention(AnnotationRetention.RUNTIME)
     annotation class LocalDataSource
@@ -117,13 +123,13 @@ object AppModule {
     @Provides
     fun provideLocalDataSource(ioDispatcher:CoroutineDispatcher):CommonDataSource=LocalDataSource(ioDispatcher)
     @Provides
-    fun provideCommonRepository(@AppModule.LocalDataSource local: CommonDataSource,firebaseClient: FirebaseClient,ioDispatcher:CoroutineDispatcher): CommonRepository {
-        return SeeForMeRepo(local,firebaseClient,ioDispatcher)
+    fun provideCommonRepository(@AppModule.LocalDataSource local: CommonDataSource,firebaseClient: FirebaseClient,fireStoreClient: FireStoreClient,ioDispatcher:CoroutineDispatcher): CommonRepository {
+        return SeeForMeRepo(local,firebaseClient,fireStoreClient,ioDispatcher)
     }
     @Singleton
     @Provides
-    fun provideSeeForMeRepo( @AppModule.LocalDataSource local: CommonDataSource,firebaseClient: FirebaseClient,ioDispatcher:CoroutineDispatcher): SeeForMeRepo =
-        SeeForMeRepo(local,firebaseClient,ioDispatcher)
+    fun provideSeeForMeRepo( @AppModule.LocalDataSource local: CommonDataSource,firebaseClient: FirebaseClient,fireStoreClient: FireStoreClient,ioDispatcher:CoroutineDispatcher): SeeForMeRepo =
+        SeeForMeRepo(local,firebaseClient,fireStoreClient,ioDispatcher)
 }
 
 @Module
