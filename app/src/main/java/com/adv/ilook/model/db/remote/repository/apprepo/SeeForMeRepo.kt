@@ -51,8 +51,7 @@ class SeeForMeRepo  @Inject constructor(
         phone: String,
         phoneAuthCallback: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     ) {
-        firebaseClient.sendVerificationCode( activity,phone,
-            phoneAuthCallback)
+        firebaseClient.sendVerificationCode( activity,phone,phoneAuthCallback)
     }
 
 

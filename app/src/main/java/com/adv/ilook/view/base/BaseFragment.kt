@@ -205,6 +205,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), TextToSpeech.OnInitL
         lifecycle.removeObserver(observer)
         callback.remove()
         _binding = null
+
     }
 
     // Create an OnBackPressedCallback to handle the back button event

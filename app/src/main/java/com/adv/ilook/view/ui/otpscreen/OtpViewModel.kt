@@ -18,7 +18,10 @@ import com.adv.ilook.view.base.BasicFunction
 import com.adv.ilook.view.ui.splash.TypeOfData
 import com.google.firebase.auth.PhoneAuthCredential
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -31,7 +34,8 @@ class OtpViewModel @Inject constructor(
     private val loginRepository: SeeForMeRepo,
     private val networkHelper: NetworkHelper
 ) : BaseViewModel(networkHelper) {
-    @Inject lateinit var sharedPreference: PrefImpl
+    @Inject
+    lateinit var sharedPreference: PrefImpl
     private var otpScreen by Delegates.notNull<OtpScreen>()
     private val _nextScreenLiveData = MutableLiveData<Int>()
     var nextScreenLiveData: LiveData<Int> = _nextScreenLiveData
@@ -85,34 +89,54 @@ class OtpViewModel @Inject constructor(
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     suspend fun registeredUserData(userName: String, userPhone: String) {
-        _otpResult.postValue(Resource.loading(isLoading=true, data = "Please wait..."))
+        _otpResult.postValue(Resource.loading(isLoading = true, data = "Please wait..."))
         withContext(Dispatchers.IO) {
-         sharedPreference.put(APP_USERNAME,userName)
-         sharedPreference.put(APP_USERPHONE,userPhone)
-         sharedPreference.put(APP_USERLOGIN,true)
+            sharedPreference.put(APP_USERNAME, userName)
+            sharedPreference.put(APP_USERPHONE, userPhone)
+            sharedPreference.put(APP_USERLOGIN, true)
         }
+
         withContext(Dispatchers.IO) {
-          //  launch(Dispatchers.IO) {
-            loginRepository.login(userName,userPhone,UserStatus.ONLINE.name,true){ isDone,message->
-                launch(Dispatchers.Main) {
-                    if (isDone) {
-                        _otpResult.postValue(Resource.success(message.toString()))
+            val result = loginRepository.login(
+                userName,
+                userPhone,
+                UserStatus.ONLINE.name,
+                true
+            ) { isDone, message ->
+                Log.d(TAG, "registeredUserData: $isDone, $message")
+                if (isDone) {
+                    launch {
+
                         _toast_success_message.postValue(message.toString())
+                    }
+                    launch {
                         _otpResult.postValue(
                             Resource.loading(
                                 isLoading = false,
                                 data = "Registered successfully"
                             )
                         )
-                    } else {
+                    }
+                    launch { _otpResult.postValue(Resource.success(message.toString())) }
+
+
+                } else {
+                    Log.d(TAG, "registeredUserData: $isDone, $message")
+                    launch {
                         _otpResult.postValue(
                             Resource.error(
                                 custom_message = "Registration failed",
                                 data = message.toString()
                             )
                         )
+                    }
+                    launch {
                         _toast_failure_message.postValue(message.toString())
+
+                    }
+                    launch {
                         _otpResult.postValue(
                             Resource.loading(
                                 isLoading = false,
@@ -120,13 +144,21 @@ class OtpViewModel @Inject constructor(
                             )
                         )
                     }
-               // }
                 }
+
             }
+
+            Log.d(TAG, "registeredUserData:result-> $result")
         }
+
+
     }
 
-    
+    override fun onCleared() {
+        super.onCleared()
+
+    }
+
     //OTP Login
     private val _verificationCompleted = MutableLiveData<PhoneAuthCredential>()
     val verificationCompleted: LiveData<PhoneAuthCredential> = _verificationCompleted
@@ -136,10 +168,12 @@ class OtpViewModel @Inject constructor(
 
     private val _signInResult = MutableLiveData<Boolean>()
     val signInResult: LiveData<Boolean> = _signInResult
-//UI Updates like progressbar,toast message,snackbar,buttons,views enable disable
+
+    //UI Updates like progressbar,toast message,snackbar,buttons,views enable disable
     private val _otpForm = MutableLiveData<UiStatusOtp>()
     val otpForm: LiveData<UiStatusOtp> = _otpForm
-//AlertBox content,nextscreen,prevscreen
+
+    //AlertBox content,nextscreen,prevscreen
     private val _otpResult = MutableLiveData<Resource<Any>>()
     val otpResult: LiveData<Resource<Any>> = _otpResult
 

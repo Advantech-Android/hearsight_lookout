@@ -31,7 +31,10 @@ import com.adv.ilook.view.base.BaseViewModel
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.PhoneAuthCredential
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
@@ -118,11 +121,10 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
 
             viewModel.loginResult.observe(lifecycleOwner) { it ->
                 val loginResult = it ?: return@observe
-                Log.d(TAG, "liveDataObserver: $loginResult")
-                Log.d(TAG, "liveDataObserver: $it")
+                Log.d(TAG, "liveDataObserver: ${loginResult.status} ${loginResult.is_loading}")
+
                 when (loginResult.status) {
                     Status.LOADING -> {
-
                         if (!loginResult.is_loading) {
                             loadingImage.visibility = View.GONE
                             innerContainer.alpha = 1f
@@ -140,11 +142,9 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                     Status.ERROR -> {
                         Log.d(TAG, "ERROR----")
                         showLoginFailed(loginResult.user_message as Int)
-
                     }
 
                     Status.SUCCESS -> {
-
                         Log.d(TAG, "liveDataObserver: Success")
                     }
                 }
@@ -248,6 +248,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun uiReactiveAction() {
         binding.apply {
 
@@ -272,6 +273,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 }
             }
             phoneText.apply {
+
                 doOnTextChanged { text, start, before, count ->
                     Log.d(
                         TAG,
@@ -288,6 +290,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                         phoneText.text.toString()
                     )
                 }
+
                 setOnEditorActionListener { _, actionId, _ ->
                     when (actionId) {
                         EditorInfo.IME_ACTION_DONE ->
@@ -300,12 +303,13 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                                     Manifest.permission.RECEIVE_SMS
                                 )
                             ) {
-                                lifecycleScope.launch(Dispatchers.IO) {
+                                lifecycleScope.launch(Dispatchers.Main) {
 
                                     viewModel.loginDataChange(
                                         usernameText.text.toString(),
                                         phoneText.text.toString()
                                     )
+
                                     viewModel.login(
                                         requireActivity(),
                                         usernameText.text.toString(),
@@ -330,13 +334,16 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>() {
                 ) {
                     val userName = usernameText.text.toString().trim()
                     val phone = phoneText.text.toString().trim()
-                    viewModel.loginDataChange(
-                        userName,
-                        phone
-                    )
-                    loadingImage.visibility = View.VISIBLE
-                    viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
-                        viewModel.login(requireActivity(), userName, phone)
+
+                    //  loadingImage.visibility = View.VISIBLE
+                    GlobalScope.launch(Dispatchers.IO) {
+                        async {
+                            viewModel.loginDataChange(
+                                userName,
+                                phone
+                            )
+                        }
+                        async { viewModel.login(requireActivity(), userName, phone) }
                     }
 
                 }

@@ -91,16 +91,26 @@ class LoginViewModel @Inject constructor(
                 if (isUserNameValid(username) && isPhoneNumberValid(phone)) {
                     try {
                         //  withContext(Dispatchers.IO) {
-                        val result = loginRepository.login(username, phone,UserStatus.ONLINE.name, isLogged = true) { isComplete,message->
+                        val result = loginRepository.login(
+                            username,
+                            phone,
+                            UserStatus.ONLINE.name,
+                            isLogged = true
+                        ) { isComplete, message ->
                             //   emit(Resource.success(it))
-                         //  emit(Resource.success("login success"))
+                            //  emit(Resource.success("login success"))
                         }
                         // emit(Resource.success(result))
                     } catch (e: Exception) {
                         emit(Resource.error(custom_message = R.string.login_failed, e.message))
                     }
                 } else {
-                    emit(Resource.error(custom_message = R.string.login_failed, "name and phone is invalid"))
+                    emit(
+                        Resource.error(
+                            custom_message = R.string.login_failed,
+                            "name and phone is invalid"
+                        )
+                    )
                 }
             } else {
                 emit(Resource.error(custom_message = R.string.network_error, "network is needed"))
@@ -118,11 +128,21 @@ class LoginViewModel @Inject constructor(
             }
                 .onCompletion {
                     Log.d(TAG, "onCompletion")
-                    _loginResult.postValue(Resource.loading(isLoading = false, data = "Completed..."))
+                    _loginResult.postValue(
+                        Resource.loading(
+                            isLoading = false,
+                            data = "Completed..."
+                        )
+                    )
                 }
                 .catch { e ->
                     Log.d(TAG, "catch ${e.message}")
-                    _loginResult.postValue(Resource.error(custom_message = R.string.login_failed, null))
+                    _loginResult.postValue(
+                        Resource.error(
+                            custom_message = R.string.login_failed,
+                            null
+                        )
+                    )
 
                 }
                 .collect { resource ->
@@ -133,13 +153,13 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    suspend fun login(activity: Activity,username: String, phone: String) {
+    suspend fun login(activity: Activity, username: String, phone: String) {
         //  loginFlow(username, phone)
 
         runBlocking {
             withContext(Dispatchers.Main) {
 
-                _loginResult.postValue(Resource.loading(isLoading = false,"Please wait..."))
+                _loginResult.postValue(Resource.loading(isLoading = true, "Please wait..."))
             }
             //  delay(1000)
             if (networkHelper.isNetworkConnected()) {
@@ -147,15 +167,20 @@ class LoginViewModel @Inject constructor(
 
                     try {
                         withContext(Dispatchers.IO) {
-                       /*     val result = loginRepository.login(username, addPhoneCountry) {
-                                _loginResult.postValue(Resource.success(it))
-                            }*/
-                            sendVerificationCode(activity,addPhoneCountry)
+                            /*     val result = loginRepository.login(username, addPhoneCountry) {
+                                     _loginResult.postValue(Resource.success(it))
+                                 }*/
+                            sendVerificationCode(activity, addPhoneCountry)
                         }
 
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
-                            _loginResult.postValue(Resource.loading(isLoading = false,"Completed..."))
+                            _loginResult.postValue(
+                                Resource.loading(
+                                    isLoading = false,
+                                    "${e.message}..."
+                                )
+                            )
                             _loginResult.postValue(
                                 Resource.error(
                                     custom_message = R.string.login_failed,
@@ -163,50 +188,75 @@ class LoginViewModel @Inject constructor(
                                 )
                             )
                         }
+                    } finally {
+                        // launch {  _loginResult.postValue(Resource.loading(isLoading = false,"Completed...")) }
                     }
 
                 } else {
                     withContext(Dispatchers.Main) {
-                        _loginResult.postValue(Resource.loading(isLoading = false,"Completed..."))
+                        _loginResult.postValue(Resource.loading(isLoading = false, "Completed..."))
                     }
                     withContext(Dispatchers.Main) {
-                        _loginResult.postValue(Resource.error(custom_message = R.string.login_failed, null))
+                        _loginResult.postValue(
+                            Resource.error(
+                                custom_message = R.string.login_failed,
+                                null
+                            )
+                        )
                     }
                 }
             } else {
                 withContext(Dispatchers.Main) {
-                    _loginResult.postValue(Resource.loading(isLoading = false,"Completed..."))
-                    _loginResult.postValue(Resource.error(custom_message = R.string.network_error, null))
+                    _loginResult.postValue(Resource.loading(isLoading = false, "Completed..."))
+                    _loginResult.postValue(
+                        Resource.error(
+                            custom_message = R.string.network_error,
+                            null
+                        )
+                    )
                 }
             }
         }
 
     }
 
-    fun sendVerificationCode(activity:Activity,phone: String) {
-        loginRepository.sendVerificationCode(activity,phone, object : PhoneAuthProvider
-            .OnVerificationStateChangedCallbacks() {
-            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-              _verificationCompleted.value = credential
+    suspend fun sendVerificationCode(activity: Activity, phone: String) {
+        withContext(Dispatchers.Main) {
+            launch(Dispatchers.IO) {
+                loginRepository.sendVerificationCode(activity, phone, object : PhoneAuthProvider
+                .OnVerificationStateChangedCallbacks() {
+                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                        Log.d("__TAG", "sendVerificationCode: Complete function")
+                        launch { _verificationCompleted.value = credential }
+                    }
+
+
+                    override fun onVerificationFailed(e: FirebaseException) {
+                        launch { _verificationFailed.value = e.message }
+                        Log.e(TAG, "onVerificationFailed: Message ->${e.message}")
+                        //   _loginResult.postValue(Resource.loading(data=false))
+                    }
+
+                    override fun onCodeSent(
+                        verificationId: String,
+                        token: PhoneAuthProvider.ForceResendingToken
+                    ) {
+                        Log.d(
+                            TAG,
+                            "onCodeSent() called with: verificationId = $verificationId, token = $token"
+                        )
+                        launch {
+                            _loginResult.postValue(Resource.loading(data = false))
+                            loginRepository.setVerificationIdAndToken(verificationId, token)
+                            _codeSent.value = true
+                        }
+                        //AD8T5Iv1Lo9Yo833gE2gWV20sSNEc-8RdphK_OU1IhkQr0hULuN752nHbSh7O9bW1XQAJ33w3nYBh6IDOvFdpTjtAsrC1tjjNar9QINwPZBhQSwlryq9Rc558hFBQD4LUOS8UkvyfkGVGtqzmzmDWCW7XRCp1eS8HA ==> verificationId
+                        //com.google.firebase.auth.PhoneAuthProvider$ForceResendingToken@1363b7b  ==> token
+                    }
+                })
             }
 
-
-            override fun onVerificationFailed(e: FirebaseException) {
-                _verificationFailed.value = e.message
-                _loginResult.postValue(Resource.loading(data=false))
-            }
-
-            override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
-                Log.d(
-                    TAG,
-                    "onCodeSent() called with: verificationId = $verificationId, token = $token"
-                )
-
-               loginRepository.setVerificationIdAndToken(verificationId, token)
-                _loginResult.postValue(Resource.loading(data=false))
-                _codeSent.value = true
-            }
-        })
+        }
     }
 
     fun verifyCode(code: String) {
@@ -244,7 +294,7 @@ class LoginViewModel @Inject constructor(
         if (phone.length != 10) {
             return false
         } else {
-             addPhoneCountry = "+91$phone"
+            addPhoneCountry = "+91$phone"
             return Patterns.PHONE.matcher(addPhoneCountry).matches()
         }
     }

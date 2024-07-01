@@ -46,92 +46,101 @@ class FirebaseClient @Inject constructor(
         status: String, //ONLINE,OFFLINE,UNREGISTER,IN_CALL
         isLogged: Boolean,
         done: (Boolean, Any?) -> Unit
-    ):Boolean{
+    ):Boolean {
 
-      return suspendCoroutine { continuation ->
+       return suspendCoroutine { continuation ->
 
-          databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
-              override fun onDataChange(snapshot: DataSnapshot) {
-                  if (snapshot.hasChild(phoneNumber)) {
-                      val dbPhoneNumber = snapshot.child(phoneNumber).key.toString()
-                      if (phoneNumber == dbPhoneNumber) {
-                          val dbChild = databaseReference.child(phoneNumber)
-                          dbChild.child(user_name).setValue(username)
-                          dbChild.child(FirebaseKeys.status).setValue(status)
-                          dbChild.child(login_status).setValue(isLogged)
-                              .addOnCompleteListener {
-                                  rigisteredPhoneNumber = phoneNumber
-                                  rigisteredUserName = username
-                                  done(true, "saved successfully")
-                                  continuation.resume(true)
-                              }.addOnFailureListener {
-                                  done(false, it.message)
-                                  continuation.resumeWithException(it)
-                              }
-                      }else{
-                          done(false, "phone number is wrong")
-                          continuation.resumeWithException(Exception("Phone number is wrong"))
-                      }
-                  } else {
-                      CoroutineScope(Dispatchers.IO).launch {
-                          fireStoreClient.getUserData(phoneNumber) { jsonStr: Any, docId: Any,status:Boolean ->
-                              if (jsonStr.toString().isEmpty()){
-                                  val fireStoreResponse = Gson().fromJson(jsonStr.toString(), FireStoreResponse::class.java)
-                                  Log.d(TAG, "onDataChange: ${jsonStr}")
-                                  if (status){
-                                      if (phoneNumber == fireStoreResponse.phoneNumber) {
-                                          val dbChild = databaseReference.child(phoneNumber)
-                                          dbChild.child(user_name).setValue(username)
-                                          dbChild.child(FirebaseKeys.status).setValue(status)
-                                          dbChild.child(login_status).setValue(isLogged).addOnSuccessListener {
-                                              rigisteredPhoneNumber = phoneNumber
-                                              rigisteredUserName = username
-                                              Log.d(TAG, "onDataChange: saved successfully")
-                                              done(true, "saved successfully")
-                                              continuation.resume(true)
-                                          }
-                                              .addOnCompleteListener {
-                                                  rigisteredPhoneNumber = phoneNumber
-                                                  rigisteredUserName = username
-                                                  Log.d(TAG, "onDataChange: saved successfully")
-                                                 // done(true, "saved successfully")
-                                                  continuation.resume(true)
-                                              }.addOnFailureListener {
-                                                  Log.d(TAG, "onDataChange: addOnFailureListener")
-                                                  done(false, it.message)
-                                                  continuation.resumeWithException(Exception(it.message))
-                                              }
+            databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.hasChild(phoneNumber)) {
+                        val dbPhoneNumber = snapshot.child(phoneNumber).key.toString()
+                        if (phoneNumber == dbPhoneNumber) {
+                            val dbChild = databaseReference.child(phoneNumber)
+                            dbChild.child(user_name).setValue(username)
+                            dbChild.child(FirebaseKeys.status).setValue(status)
+                            dbChild.child(login_status).setValue(isLogged)
+                                .addOnSuccessListener {
+                                    rigisteredPhoneNumber = phoneNumber
+                                    rigisteredUserName = username
+                                    Log.d(TAG, "onDataChange: saved successfully")
+                                    done(true, "saved successfully")
+                                    continuation.resume(true)
+                                }
+                               /* .addOnCompleteListener {
+                                    rigisteredPhoneNumber = phoneNumber
+                                    rigisteredUserName = username
+                                    done(true, "saved successfully")
+                                    continuation.resume(true)
+                                }*/.addOnFailureListener {
+                                    done(false, it.message)
+                                    continuation.resumeWithException(it)
+                                }
+                        } else {
+                            done(false, "phone number is wrong")
+                            continuation.resumeWithException(Exception("Phone number is wrong"))
+                        }
+                    } else {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            fireStoreClient.getUserData(phoneNumber) { jsonStr: Any, docId: Any, status: Boolean ->
+                                if (jsonStr.toString().isNotEmpty()) {
+                                    val fireStoreResponse = Gson().fromJson(
+                                        jsonStr.toString(),
+                                        FireStoreResponse::class.java
+                                    )
+                                    Log.d(TAG, "onDataChange: , ${jsonStr} ,status:->$status")
+                                    if (status) {
+                                        if (phoneNumber == fireStoreResponse.phoneNumber) {
 
-                                      }else{
-                                          Log.d(TAG, "onDataChange: Device is not purchased")
-                                          done(false,"Device is not purchased")
-                                          continuation.resumeWithException(Exception("Device is not purchased"))
-                                      }
+                                            val dbChild = databaseReference.child(phoneNumber)
+                                            dbChild.child(user_name).setValue(username)
+                                            dbChild.child(FirebaseKeys.status).setValue(status)
+                                            dbChild.child(login_status).setValue(isLogged)
+                                                .addOnSuccessListener {
+                                                    rigisteredPhoneNumber = phoneNumber
+                                                    rigisteredUserName = username
+                                                    Log.d(TAG, "onDataChange: saved successfully")
+                                                    done(true, "saved successfully")
+                                                    continuation.resume(true)
+                                                }/*.
+                                                addOnCompleteListener {
+                                                    rigisteredPhoneNumber = phoneNumber
+                                                    rigisteredUserName = username
+                                                    done(true, "saved successfully")
+                                                    continuation.resume(true)
+                                                }*/
+                                               .addOnFailureListener {
+                                                    Log.d(TAG, "onDataChange: addOnFailureListener")
+                                                    done(false, it.message)
+                                                    continuation.resumeWithException(Exception(it.message))
+                                                }
 
-                                  }
-                                  else{
-                                      Log.e(TAG, "onDataChange: ${fireStoreResponse.errorMsg}")
-                                      done(false,"Something went wrong")
-                                      continuation.resumeWithException(Exception("Something went wrong"))
-                                  }
-                              }
-                          }
-                      }
+                                        } else {
+                                            Log.d(TAG, "onDataChange: Device is not purchased")
+                                            done(false, "Device is not purchased")
+                                            continuation.resumeWithException(Exception("Device is not purchased"))
+                                        }
 
-                  }
-              }
+                                    } else {
+                                        Log.e(TAG, "onDataChange: ${fireStoreResponse.errorMsg}")
+                                        done(false, "Something went wrong")
+                                        continuation.resumeWithException(Exception("Something went wrong"))
+                                    }
+                                }
+                            }
+                        }
 
-              override fun onCancelled(error: DatabaseError) {
-                  done(false, error.message)
-                  continuation.resumeWithException(Exception(error.message))
-              }
-          })
+                    }
+                }
 
-      }
+                override fun onCancelled(error: DatabaseError) {
+                    done(false, error.message)
+                    continuation.resumeWithException(Exception(error.message))
+                }
+            })
 
-
-
+        }
     }
+
 
     fun logout(
         username: String, phone: String, status: String,

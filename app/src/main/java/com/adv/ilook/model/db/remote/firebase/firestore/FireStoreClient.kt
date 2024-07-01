@@ -17,24 +17,25 @@ class FireStoreClient @Inject constructor(
     suspend fun saveUserData(data:List<Any>){
 
     }
-    suspend fun getUserData(phoneNumber:Any,callback:(Any,Any,Boolean)->Unit){
+     fun getUserData(phoneNumber:Any,callback:(Any,Any,Boolean)->Unit){
         val customerDetails = fireStore.collection("customer_details").document(phoneNumber.toString())
         customerDetails.get().addOnSuccessListener {result ->
             val gson = Gson()
             var str = ""
 
             val gsonType: Type? = object : TypeToken<java.util.HashMap<*, *>?>() {}.type
-            Log.i(TAG_, "getUserData: id =${result.id} => map =${result.data}")
+          
             str = gson.toJson(result.data, gsonType)
             // var genericModel = gson.fromJson(str, GenericModel::class.java)
             Log.d(TAG_, "getUserData: Map to jsonStr = $str")
 
             callback(str, result.id,true)
         }.addOnFailureListener {exception ->
-            Log.e(TAG, "getUserData: ", )
+            Log.e(TAG, "getUserData: ${getErrorJson(exception)}")
             callback(getErrorJson(exception),0,false)
         }.addOnCompleteListener { message->
-          //  callback(message.toString(), message.result.id)
+            Log.d(TAG, "getUserData:---> $message")
+         //  callback(message.toString(), message.result.id,true)
         }
     }
     fun getErrorJson(exception: Exception): String {

@@ -143,7 +143,15 @@ class OtpFragment() : BaseFragment<FragmentOtpBinding>() {
                   }
 
                 }else{
-                    nav(previousScreenId)
+                    loginButton.showSnackbar(this.loginButton,
+                        msg = "Verification failed",
+                        actionMessage = "Ok", length = 2, action = { v1 ->
+
+                        }, action2 = { v2 ->
+
+                        }
+                    )
+                  //  nav(previousScreenId)
                 }
 
             }
